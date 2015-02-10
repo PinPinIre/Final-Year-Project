@@ -44,6 +44,12 @@ class Corpus(object):
             return True
         return False
 
+    def transform_corpus(self, transformation):
+        """Function to transform one corpus into another"""
+        # TODO: Handle the transformation from one representation to another, transformations can be applied on top
+        # TODO: of each other so this must also be considered. Maybe track current representation in corpus class?
+        return self
+
 
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]):
