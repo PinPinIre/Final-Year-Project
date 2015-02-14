@@ -3,6 +3,7 @@ import copy
 from os import listdir
 from os.path import isdir, isfile, join
 from gensim import models
+from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
 
 
@@ -22,15 +23,12 @@ class Corpus(object):
         else:
             self.dictionary = Dictionary([])
             self.docs = PaperCorpus([])
-        self.transformation = None
+        self.transformation = IdentityTransformation()
         return
 
     def __iter__(self):
         # Apply transformation to corpus if it exists
-        if self.transformation:
-            docs = self.transformation[self.docs]
-        else:
-            docs = self.docs
+        docs = self.transformation[self.docs]
         if type(self.docs) is PaperCorpus:
             # Need to convert to a vector representation if still in plain text
             for doc in self.docs.get_texts():
@@ -58,11 +56,7 @@ class Corpus(object):
             transformation: Transformation to be applied to the corpus
             returns: Corpus object with transformation applied
         """
-        # Todo: Further investigate applying transformations to transformations - currently apply current before creating new one
-        if self.transformation:
-            docs = self.transformation[self.docs]
-        else:
-            docs = self.docs
+        docs = self.transformation[self.docs]
         transformed_model = transformation(docs)
         new_corpus = Corpus()
         new_corpus.dictionary = copy.copy(self.dictionary)
@@ -76,6 +70,13 @@ class PaperCorpus(TextCorpus):
         for doc in self.input:
             handle = open(doc, "r")
             yield handle.read().lower().split()
+
+
+class IdentityTransformation(TransformationABC):
+    # Identity transformation which returns the input corpus
+    def __getitem__(self, vec):
+        return vec
+
 
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]):
