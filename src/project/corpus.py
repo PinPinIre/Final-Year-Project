@@ -50,6 +50,9 @@ class Corpus(object):
             return True
         return False
 
+    def __len__(self):
+        return len(self.docs)
+
     def transform_corpus(self, transformation):
         """
             Function to transform one corpus representation into another
@@ -78,31 +81,39 @@ class IdentityTransformation(TransformationABC):
         return vec
 
 
+def corpus_equal(corpus1, corpus2):
+    if len(corpus1) == len(corpus2):
+        for doc1, doc2 in zip(corpus1, corpus2):
+            if doc1 != doc2:
+                return False
+    return True
+
+
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]):
-        corpus = Corpus(sys.argv[1])
         load_corpus = Corpus()
+        corpus = Corpus(sys.argv[1])
         # TODO: Write proper tests
-        print "Testing Plain Text Corpus"
-        for vector in corpus:
-            print vector
+
+        # Tests if applying a transformation to a non-saved corpus results in a new representation
+        tfid_corpus = corpus.transform_corpus(models.TfidfModel)
+        print "Test 1"
+        # TODO: Find out why this fails
+        if corpus_equal(corpus, tfid_corpus):
+            print "tfid corpus is equal to corpus that hasn't been saved"
+        else:
+            print "tfid corpus is not equal to corpus that hasn't been saved"
+
         corpus.save(sys.argv[2])
-        print "Testing Load Corpus empty"
-        for vector in load_corpus:
-            print vector
-        print "Testing Load Corpus after MMload"
         load_corpus.load(sys.argv[2]+".dict", sys.argv[2])
-        for vector in load_corpus:
-            print vector
-        print "Testing Plain Text Transformation Corpus"
-        transformed_corpus = corpus.transform_corpus(models.TfidfModel)
-        for vector in transformed_corpus:
-            # TODO: Output currently equals input, investigate this.
-            print vector
-        print "Testing Load Transformation MMCorpus"
-        transformed_corpus = load_corpus.transform_corpus(models.TfidfModel)
-        for vector in transformed_corpus:
-            print vector
+        tfid_corpus_load = load_corpus.transform_corpus(models.TfidfModel)
+
+        # Tests if applying a transformation to a saved corpus results in a new representation
+        print "Test 2"
+        if corpus_equal(load_corpus, tfid_corpus_load):
+            print "tfid corpus is equal to corpus that has been saved"
+        else:
+            print "tfid corpus is not equal to corpus that hasn been saved"
     else:
         print "Corpus requires directory as an argument."
 
