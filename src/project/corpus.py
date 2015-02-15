@@ -55,7 +55,9 @@ class Corpus(object):
 
     def transform_corpus(self, transformation):
         """
-            Function to transform one corpus representation into another
+            Function to transform one corpus representation into another. Applying Transformations can be can be costly
+            as they are done on the fly. Save to disk first if access will be frequent
+
             transformation: Transformation to be applied to the corpus
             returns: Corpus object with transformation applied
         """
@@ -66,6 +68,7 @@ class Corpus(object):
         new_corpus.docs = copy.copy(docs)
         new_corpus.transformation = transformed_model
         return new_corpus
+
 
 class PaperCorpus(TextCorpus):
     # Wrap plain text document streaming - allows us to apply transformations to it
@@ -88,7 +91,6 @@ def corpus_equal(corpus1, corpus2):
                 return False
     return True
 
-
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]):
         load_corpus = Corpus()
@@ -98,7 +100,7 @@ def main():
         # Tests if applying a transformation to a non-saved corpus results in a new representation
         tfid_corpus = corpus.transform_corpus(models.TfidfModel)
         print "Test 1"
-        # TODO: Find out why this fails
+        # TODO: Fails possibly caused by the corpus not being in a vector representation? Investigate!
         if corpus_equal(corpus, tfid_corpus):
             print "tfid corpus is equal to corpus that hasn't been saved"
         else:
@@ -113,7 +115,7 @@ def main():
         if corpus_equal(load_corpus, tfid_corpus_load):
             print "tfid corpus is equal to corpus that has been saved"
         else:
-            print "tfid corpus is not equal to corpus that hasn been saved"
+            print "tfid corpus is not equal to corpus that has been saved"
     else:
         print "Corpus requires directory as an argument."
 
