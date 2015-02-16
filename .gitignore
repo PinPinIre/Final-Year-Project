@@ -57,5 +57,5 @@ target/
 
 # Gensim
 *.mm
-*.mm.index
-*.mm.dict
+*.index
+*.dict
