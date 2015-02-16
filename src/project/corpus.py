@@ -37,11 +37,11 @@ class Corpus(object):
             for doc in docs:
                 yield doc
 
-    def save(self, file):
+    def save(self, dictionary, file):
         # TODO: Investigate saving to another file format, more memory efficient?
         corpus = [vector for vector in self]
+        Dictionary.save(self.dictionary, dictionary)
         MmCorpus.serialize(file, corpus)
-        Dictionary.save(self.dictionary, file+".dict")
 
     def load(self, dictionary, corpus):
         if isfile(dictionary) and isfile(corpus):
@@ -91,8 +91,9 @@ def corpus_equal(corpus1, corpus2):
                 return False
     return True
 
+
 def main():
-    if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]):
+    if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
         load_corpus = Corpus()
         corpus = Corpus(sys.argv[1])
         # TODO: Write proper tests
@@ -106,8 +107,8 @@ def main():
         else:
             print "tfid corpus is not equal to corpus that hasn't been saved"
 
-        corpus.save(sys.argv[2])
-        load_corpus.load(sys.argv[2]+".dict", sys.argv[2])
+        corpus.save(sys.argv[2], sys.argv[3])
+        load_corpus.load(sys.argv[2], sys.argv[3])
         tfid_corpus_load = load_corpus.transform_corpus(models.TfidfModel)
 
         # Tests if applying a transformation to a saved corpus results in a new representation
