@@ -1,6 +1,10 @@
+Pyro4==4.33
+beautifulsoup4==4.3.2
 chardet==2.3.0
 gensim==0.10.3
 numpy==1.9.1
+scikit-learn==0.15.2
 scipy==0.15.1
+serpent==1.8
 six==1.9.0
 wsgiref==0.1.2
