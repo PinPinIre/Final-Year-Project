@@ -1,4 +1,5 @@
 #!/bin/sh
+# This script should not be used on large number of files. Just for a handful. Use arxiv S3 bucket for batches
 
 DIR=$1
 export PDF="${DIR}pdf"
