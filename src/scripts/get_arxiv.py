@@ -10,20 +10,23 @@ HEP_URL = 'http://arxiv.org/abs/hep-th/%d'
 
 
 def get_pdf(paper_id, save_dir):
-    try:
-        paper_page = urllib2.urlopen(HEP_URL % paper_id)
-        soup = bs4.BeautifulSoup(paper_page.read().decode('utf8'))
-    except:
-        print "Error"
-    else:
-        # TODO: Check if this pattern holds for all papers
-        file = soup.find("a", {"accesskey" : "f"})
-        if file:
-            file_url = file["href"]
-            print os.path.join(save_dir, str(paper_id) + ".pdf")
-            urllib.urlretrieve(BASE_URL + file_url, os.path.join(save_dir, str(paper_id) + ".pdf"))
+    file_path = os.path.join(save_dir, str(paper_id) + ".pdf")
+    if not os.path.isfile(file_path):
+        # Only try to download missing files
+        try:
+            paper_page = urllib2.urlopen(HEP_URL % paper_id)
+            soup = bs4.BeautifulSoup(paper_page.read().decode('utf8'))
+        except:
+            print "Error"
         else:
-            print "Unable to find PDF: %d" % paper_id
+            # TODO: Check if this pattern holds for all papers
+            file = soup.find("a", {"accesskey" : "f"})
+            if file:
+                file_url = file["href"]
+                print os.path.join(save_dir, str(paper_id) + ".pdf")
+                urllib.urlretrieve(BASE_URL + file_url, os.path.join(save_dir, str(paper_id) + ".pdf"))
+            else:
+                print "Unable to find PDF: %d" % paper_id
 
 
 def main():
