@@ -97,7 +97,7 @@ def corpus_equal(corpus1, corpus2):
 
 
 def filter_common(word_list):
-    words = [word for word in word_list if word not in ignore_words]
+    words = [word for word in word_list if len(word) > 1 and word not in ignore_words]
     return words
 
 
