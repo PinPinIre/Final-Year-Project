@@ -1,10 +1,14 @@
 import sys
 import copy
+import codecs
 from os import listdir
-from os.path import isdir, isfile, join
-from gensim import models
+from os.path import isdir, isfile, join, splitext
+from nltk.corpus import stopwords
+from gensim import models, utils
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
+
+ignore_words = stopwords.words("english")
 
 
 class Corpus(object):
@@ -12,9 +16,9 @@ class Corpus(object):
 
     def __init__(self, dir=None):
         if dir:
-            docs = [join(dir, doc) for doc in listdir(dir) if isfile(join(dir, doc))]
+            docs = [join(dir, doc) for doc in listdir(dir) if isfile(join(dir, doc)) and splitext(doc)[-1] == ".txt"]
             """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
-            dictionary = Dictionary(open(doc).read().lower().split() for doc in docs)
+            dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
             once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
             dictionary.filter_tokens(once_words)    # Exclude if appears once
             dictionary.compactify()                 # Remove gaps in ids left by removing words
@@ -74,7 +78,7 @@ class PaperCorpus(TextCorpus):
     # Wrap plain text document streaming - allows us to apply transformations to it
     def get_texts(self):
         for doc in self.input:
-            handle = open(doc, "r")
+            handle = codecs.open(doc, encoding='utf-8')
             yield handle.read().lower().split()
 
 
@@ -92,6 +96,11 @@ def corpus_equal(corpus1, corpus2):
     return True
 
 
+def filter_common(word_list):
+    words = [word for word in word_list if word not in ignore_words]
+    return words
+
+
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
         load_corpus = Corpus()
@@ -100,7 +109,6 @@ def main():
 
         # Tests if applying a transformation to a non-saved corpus results in a new representation
         tfid_corpus = corpus.transform_corpus(models.TfidfModel)
-        print "Test 1"
         # TODO: Fails possibly caused by the corpus not being in a vector representation? Investigate!
         if corpus_equal(corpus, tfid_corpus):
             print "tfid corpus is equal to corpus that hasn't been saved"
