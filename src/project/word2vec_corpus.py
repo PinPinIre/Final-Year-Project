@@ -29,7 +29,7 @@ class W2VCorpus(Corpus):
 
     def load(self, file):
         super(W2VCorpus, self).load(self.dict_loc, self.vec_loc)
-        if self.model: self.model.load(file)
+        self.model = models.Word2Vec.load(file)
 
 
 def main():
