@@ -1,8 +1,8 @@
 import sys
-import logging
 from os.path import isdir, isfile
 from gensim import models
 from corpus import Corpus
+import logging
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
@@ -17,17 +17,21 @@ class LDACorpus(Corpus):
         self.passes = passes
         self.dict_loc = dict_loc
         self.vec_loc = vec_loc
-        self.transformation = models.ldamodel.LdaModel(corpus=self.docs, id2word=self.dictionary, num_topics=self.no_topics, update_every=self.update, chunksize=self.chunksize, passes=self.passes)
+        self.transform_corpus(models.TfidfModel)
+        self.model = None
 
     def print_topics(self):
-        self.transformation.print_topics(20)
+        if self.model: print self.model.print_topics(20)
+
+    def train_model(self):
+        #self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, update_every=self.update, chunksize=self.chunksize, passes=self.passes)
+        self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, passes=10, gamma_threshold=0.0001, iterations=100, chunksize=500)
 
 
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
-        corpus = Corpus(sys.argv[1])
-        corpus.save(sys.argv[2], sys.argv[3])
-        corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=25)
+        corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=5)
+        corpus.train_model()
         corpus.print_topics()
     else:
         print "Corpus requires directory as an argument."
