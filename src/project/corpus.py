@@ -1,10 +1,9 @@
 import sys
-import copy
 import codecs
 from os import listdir
 from os.path import isdir, isfile, join, splitext
 from nltk.corpus import stopwords
-from gensim import models, utils
+from gensim import models
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
 
@@ -22,6 +21,7 @@ class Corpus(object):
             once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
             dictionary.filter_tokens(once_words)    # Exclude if appears once
             dictionary.compactify()                 # Remove gaps in ids left by removing words
+            dictionary.filter_extremes(no_below=10) # Filter if in less than 10 docs
             self.dictionary = dictionary
             self.docs = PaperCorpus(docs)
         else:
@@ -32,20 +32,20 @@ class Corpus(object):
 
     def __iter__(self):
         # Apply transformation to corpus if it exists
-        docs = self.transformation[self.docs]
+        self.docs = self.transformation[self.docs]
         if type(self.docs) is PaperCorpus:
             # Need to convert to a vector representation if still in plain text
             for doc in self.docs.get_texts():
                 yield self.dictionary.doc2bow(doc)
         else:
+            docs = self.transformation[self.docs]
             for doc in docs:
                 yield doc
 
     def save(self, dictionary, file):
         # TODO: Investigate saving to another file format, more memory efficient?
-        corpus = [vector for vector in self]
         Dictionary.save(self.dictionary, dictionary)
-        MmCorpus.serialize(file, corpus)
+        MmCorpus.serialize(file, self)
 
     def load(self, dictionary, corpus):
         if isfile(dictionary) and isfile(corpus):
@@ -65,13 +65,10 @@ class Corpus(object):
             transformation: Transformation to be applied to the corpus
             returns: Corpus object with transformation applied
         """
-        docs = self.transformation[self.docs]
-        transformed_model = transformation(docs)
-        new_corpus = Corpus()
-        new_corpus.dictionary = copy.copy(self.dictionary)
-        new_corpus.docs = copy.copy(docs)
-        new_corpus.transformation = transformed_model
-        return new_corpus
+        self.docs = self.transformation[self.docs]
+        transformed_model = transformation(self.docs)
+        self.transformation = transformed_model
+        return
 
 
 class PaperCorpus(TextCorpus):
@@ -79,7 +76,7 @@ class PaperCorpus(TextCorpus):
     def get_texts(self):
         for doc in self.input:
             handle = codecs.open(doc, encoding='utf-8')
-            yield handle.read().lower().split()
+            yield filter_common(handle.read().lower().split())
 
 
 class IdentityTransformation(TransformationABC):
@@ -106,25 +103,9 @@ def main():
         load_corpus = Corpus()
         corpus = Corpus(sys.argv[1])
         # TODO: Write proper tests
-
-        # Tests if applying a transformation to a non-saved corpus results in a new representation
-        tfid_corpus = corpus.transform_corpus(models.TfidfModel)
-        # TODO: Fails possibly caused by the corpus not being in a vector representation? Investigate!
-        if corpus_equal(corpus, tfid_corpus):
-            print "tfid corpus is equal to corpus that hasn't been saved"
-        else:
-            print "tfid corpus is not equal to corpus that hasn't been saved"
-
+        #corpus.transform_corpus(models.TfidfModel)
         corpus.save(sys.argv[2], sys.argv[3])
         load_corpus.load(sys.argv[2], sys.argv[3])
-        tfid_corpus_load = load_corpus.transform_corpus(models.TfidfModel)
-
-        # Tests if applying a transformation to a saved corpus results in a new representation
-        print "Test 2"
-        if corpus_equal(load_corpus, tfid_corpus_load):
-            print "tfid corpus is equal to corpus that has been saved"
-        else:
-            print "tfid corpus is not equal to corpus that has been saved"
     else:
         print "Corpus requires directory as an argument."
 
