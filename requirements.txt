@@ -1,10 +1,17 @@
+Cython==0.22
+Pillow==2.7.0
 Pyro4==4.33
 beautifulsoup4==4.3.2
 chardet==2.3.0
 gensim==0.10.3
+nltk==3.0.1
 numpy==1.9.1
+pandas==0.15.2
+python-dateutil==2.4.0
+pytz==2014.10
 scikit-learn==0.15.2
 scipy==0.15.1
 serpent==1.8
 six==1.9.0
+wordcloud==1.0.0
 wsgiref==0.1.2
