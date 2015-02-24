@@ -21,16 +21,16 @@ class LDACorpus(Corpus):
         self.model = None
 
     def print_topics(self):
-        if self.model: print self.model.print_topics(20)
+        if self.model: print self.model.print_topics(100)
 
     def train_model(self):
         #self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, update_every=self.update, chunksize=self.chunksize, passes=self.passes)
-        self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, passes=10, gamma_threshold=0.0001, iterations=100, chunksize=500)
+        self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, iterations=500)
 
 
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
-        corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=5)
+        corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=100)
         corpus.train_model()
         corpus.print_topics()
     else:
