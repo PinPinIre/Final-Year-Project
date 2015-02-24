@@ -21,7 +21,7 @@ class Corpus(object):
             once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
             dictionary.filter_tokens(once_words)    # Exclude if appears once
             dictionary.compactify()                 # Remove gaps in ids left by removing words
-            dictionary.filter_extremes(no_below=10) # Filter if in less than 10 docs
+            dictionary.filter_extremes(no_below=20, ) # Filter if in less than 10 docs
             self.dictionary = dictionary
             self.docs = PaperCorpus(docs)
         else:
@@ -94,7 +94,7 @@ def corpus_equal(corpus1, corpus2):
 
 
 def filter_common(word_list):
-    words = [word for word in word_list if len(word) > 1 and word not in ignore_words]
+    words = [word for word in word_list if len(word) > 1]
     return words
 
 
