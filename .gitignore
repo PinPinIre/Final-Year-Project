@@ -59,3 +59,5 @@ target/
 *.mm
 *.index
 *.dict
+*.state
+*.w2v
