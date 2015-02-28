@@ -3,9 +3,10 @@ import codecs
 from os import listdir
 from os.path import isdir, isfile, join, splitext
 from nltk.corpus import stopwords
-from gensim import models
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
+import logging
+logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 ignore_words = stopwords.words("english")
 
@@ -103,7 +104,7 @@ def filter_common(word_list):
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
         load_corpus = Corpus()
-        corpus = Corpus(sys.argv[1])
+        corpus = Corpus(directory=sys.argv[1])
         # TODO: Write proper tests
         #corpus.transform_corpus(models.TfidfModel)
         corpus.save(sys.argv[2], sys.argv[3])
