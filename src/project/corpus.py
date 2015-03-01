@@ -5,8 +5,6 @@ from os.path import isdir, isfile, join, splitext
 from nltk.corpus import stopwords
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
-import logging
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 ignore_words = stopwords.words("english")
 

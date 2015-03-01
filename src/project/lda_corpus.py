@@ -2,8 +2,6 @@ import sys
 from os.path import isdir, isfile
 from gensim import models
 from corpus import Corpus
-import logging
-logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 
 class LDACorpus(Corpus):
