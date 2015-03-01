@@ -1,24 +1,48 @@
 import sys
-import logging
 from os.path import isdir, isfile
 from corpus import Corpus
-
+from gensim.matutils import sparse2full
+from gensim import models
+from annoy import AnnoyIndex
+#TODO: Currently using Annoy as was straight forward to set up, investigate FLANN
 
 class KNNCorpus(Corpus):
+    no_trees = 10 # TODO: Tweak this Annoy param
 
-    def __init__(self, dict_loc, vec_loc):
-        Corpus.__init__(self)
-        Corpus.load(self, dict_loc, vec_loc)
+    def __init__(self, dictionary=None, corpus=None, index_file=None):
+        Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
         # Set up for KNN
+        features = len(self.dictionary)
+        self.index = AnnoyIndex(features)
+        if not index_file:
+            self.transform_corpus(models.TfidfModel)
+            for i, vector in enumerate(self):
+                dense_vector = sparse2full(vector, features).tolist()
+                self.index.add_item(i, dense_vector)
+            self.index.build(self.no_trees)
+        else:
+            self.index.load(index_file)
         return
+
+    def find_nn(self, doc_no, neighbours):
+        return self.index.get_nns_by_item(doc_no, neighbours)
+
+    def save(self, index):
+        self.index.save(index)
+
+    @classmethod
+    def load(cls, dictionary, corpus, index_file):
+        return cls(dictionary=dictionary, corpus=corpus, index_file=index_file)
 
 
 def main():
+    knn_file = "KNN.index"
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
-        corpus = Corpus(sys.argv[1])
-        corpus.save(sys.argv[2], sys.argv[3])
-        corpus = KNNCorpus(sys.argv[2], sys.argv[3])
-        corpus.print_topics()
+        if not isfile(knn_file):
+            corpus = KNNCorpus(sys.argv[2], sys.argv[3])
+            corpus.save(knn_file)
+        new_corpus = KNNCorpus.load(sys.argv[2], sys.argv[3], knn_file)
+        print new_corpus.find_nn(0, 10)
     else:
         print "Corpus requires directory as an argument."
 
