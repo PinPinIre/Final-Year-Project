@@ -30,6 +30,7 @@ class Corpus(object):
             self.dictionary = Dictionary([])
             self.docs = PaperCorpus([])
         self.transformation = IdentityTransformation()
+        self.train_time = None
         return
 
     def __iter__(self):
@@ -70,6 +71,9 @@ class Corpus(object):
         transformed_model = transformation(self.docs)
         self.transformation = transformed_model
         return
+
+    def get_train_time(self):
+        return self.train_time
 
 
 class PaperCorpus(TextCorpus):

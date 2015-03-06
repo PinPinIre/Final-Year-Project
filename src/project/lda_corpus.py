@@ -35,9 +35,6 @@ class LDACorpus(Corpus):
         Corpus.save(self, dictionary, file)
         self.model.save(lda_file)
 
-    def get_train_time(self):
-        return self.train_time
-
     @classmethod
     def load(cls, dictionary, corpus, lda_file):
         return cls(dictionary=dictionary, corpus=corpus, lda_corpus=lda_file)
@@ -54,7 +51,7 @@ def main():
             corpus.print_topics()
             corpus.save("LDA.dict", "LDA.mm", "LDA.lda")
         time = corpus.get_train_time()
-        print "Train Time:\t" + time
+        print "LDA Train Time:\t" + time
     else:
         print "Corpus requires directory as an argument."
 
