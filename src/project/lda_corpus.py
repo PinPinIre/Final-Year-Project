@@ -1,4 +1,5 @@
 import sys
+import datetime
 from os.path import isdir, isfile
 from gensim import models
 from corpus import Corpus
@@ -14,11 +15,14 @@ class LDACorpus(Corpus):
         self.passes = passes
         self.dict_loc = dictionary
         self.vec_loc = corpus
+        start_time = datetime.datetime.now()
         if not lda_corpus:
             self.transform_corpus(models.TfidfModel)
             self.model = self.train_model()
         else:
             self.model = models.ldamodel.LdaModel.load(lda_corpus)
+        end_time = datetime.datetime.now()
+        self.train_time = end_time - start_time
 
     def print_topics(self, num_words=10):
         if self.model: return self.model.print_topics(100, num_words=num_words)
@@ -31,6 +35,9 @@ class LDACorpus(Corpus):
         Corpus.save(self, dictionary, file)
         self.model.save(lda_file)
 
+    def get_train_time(self):
+        return self.train_time
+
     @classmethod
     def load(cls, dictionary, corpus, lda_file):
         return cls(dictionary=dictionary, corpus=corpus, lda_corpus=lda_file)
@@ -38,11 +45,16 @@ class LDACorpus(Corpus):
 
 def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
-        corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=100)
-        corpus.train_model()
-        corpus.print_topics()
-        #corpus.save("LDA.dict", "LDA.mm")
-        #corpus = LDACorpus.load("LDA.dict", "LDA.mm")
+        if len(sys.argv) is 5 and isfile(sys.argv[4]):
+            # Load model if file exists
+            corpus = LDACorpus.load(sys.argv[2], sys.argv[3], sys.argv[4])
+        else:
+            # Otherwise build LDA model
+            corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=100)
+            corpus.print_topics()
+            corpus.save("LDA.dict", "LDA.mm", "LDA.lda")
+        time = corpus.get_train_time()
+        print "Train Time:\t" + time
     else:
         print "Corpus requires directory as an argument."
 
