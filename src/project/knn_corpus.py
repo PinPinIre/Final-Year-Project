@@ -48,7 +48,7 @@ def main():
         corpus = KNNCorpus.load(sys.argv[2], sys.argv[3], knn_file)
         print corpus.find_nn(0, 10)
         time = corpus.get_train_time()
-        print "KNN Train Time:\t" + time
+        print "KNN Train Time:\t" + str(time)
     else:
         print "Corpus requires directory as an argument."
 

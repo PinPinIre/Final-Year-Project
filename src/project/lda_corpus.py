@@ -51,7 +51,7 @@ def main():
             corpus.print_topics()
             corpus.save("LDA.dict", "LDA.mm", "LDA.lda")
         time = corpus.get_train_time()
-        print "LDA Train Time:\t" + time
+        print "LDA Train Time:\t" + str(time)
     else:
         print "Corpus requires directory as an argument."
 
