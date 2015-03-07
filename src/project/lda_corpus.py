@@ -41,14 +41,13 @@ class LDACorpus(Corpus):
 
 
 def main():
-    if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
-        if len(sys.argv) is 5 and isfile(sys.argv[4]):
+    if len(sys.argv) is 5 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
+        if isfile(sys.argv[4]):
             # Load model if file exists
             corpus = LDACorpus.load(sys.argv[2], sys.argv[3], sys.argv[4])
         else:
             # Otherwise build LDA model
             corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=100)
-            corpus.print_topics()
             corpus.save("LDA.dict", "LDA.mm", "LDA.lda")
         time = corpus.get_train_time()
         print "LDA Train Time:\t" + str(time)
