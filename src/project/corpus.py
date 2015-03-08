@@ -5,6 +5,7 @@ from os.path import isdir, isfile, join, splitext
 from nltk.corpus import stopwords
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
+from gensim.utils import ClippedCorpus
 
 ignore_words = stopwords.words("english")
 
@@ -71,6 +72,9 @@ class Corpus(object):
         transformed_model = transformation(self.docs)
         self.transformation = transformed_model
         return
+
+    def clip_corpus(self, max_docs=None):
+        self.docs = ClippedCorpus(self.docs, max_docs)
 
     def get_train_time(self):
         return self.train_time

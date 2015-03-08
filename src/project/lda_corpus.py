@@ -7,8 +7,9 @@ from corpus import Corpus
 
 class LDACorpus(Corpus):
 
-    def __init__(self, dictionary=None, corpus=None, lda_corpus=None, no_topics=100, update=1, chunksize=10000, passes=1):
+    def __init__(self, dictionary=None, corpus=None, lda_corpus=None, no_topics=100, update=1, chunksize=10000, passes=1, max_docs=None):
         Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
+        self.clip_corpus(max_docs)
         self.no_topics = no_topics
         self.update = update
         self.chunksize = chunksize

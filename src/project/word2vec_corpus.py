@@ -2,13 +2,14 @@ import sys
 import datetime
 from os.path import isdir, isfile
 from corpus import Corpus
-from gensim import models
+from gensim import models, utils
 
 
 class W2VCorpus(Corpus):
 
-    def __init__(self, directory=None, dictionary=None, corpus=None, w2v_model=None):
+    def __init__(self, directory=None, dictionary=None, corpus=None, w2v_model=None, max_docs=None):
         Corpus.__init__(self, directory=directory, dictionary=dictionary, corpus=corpus)
+        self.clip_corpus(max_docs)
         self.dict_loc = dictionary
         self.vec_loc = corpus
         self.model = None
