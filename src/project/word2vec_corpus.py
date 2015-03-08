@@ -2,7 +2,7 @@ import sys
 import datetime
 from os.path import isdir, isfile
 from corpus import Corpus
-from gensim import models, utils
+from gensim import models
 
 
 class W2VCorpus(Corpus):
