@@ -31,9 +31,10 @@ def run_algo(directory, ints, algorithm):
         log.write(("base_corpus_build_time %d:\t" % max_corpus) + str(base_corpus_build_time))
         for size in ints:
             # For each int in the param list then apply the corpus algorithm using a sliced corpus
+            test_corpus = algorithms[algorithm](dictionary=dictionary_loc, corpus=base_corpus_file, max_docs=size)
             # Save any mm, index files, etc to a directory so they can be used again.
-            test_corpus = algorithms[algorithm](dictionary=dictionary_loc, corpus=corpus_loc, max_docs=size)
-            # Log temporal time)
+            # test_corpus.save() TODO: Modify save so it is general accross all algorithms.
+            # Log temporal time
             log.write(("%s %d train time:\t" % (algorithm, size)) + test_corpus.get_train_time())
 
 
