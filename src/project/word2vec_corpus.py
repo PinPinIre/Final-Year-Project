@@ -47,7 +47,6 @@ def main():
             corpus.save(w2v)
         else:
             corpus = W2VCorpus.load(sys.argv[2], sys.argv[3], w2v)
-        print "Sim: velocity <-> speed\t" + str(corpus.similarity("velocity", "speed"))
         time = corpus.get_train_time()
         print "W2V Train Time:\t" + str(time)
     else:

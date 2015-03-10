@@ -1,4 +1,5 @@
 import argparse
+from os.path import isdir
 from project import corpus, knn_corpus, lda_corpus, word2vec_corpus
 
 algorithms = {"lda": lda_corpus.LDACorpus,
@@ -12,9 +13,16 @@ def main():
     parser.add_argument('algorithm', help='algoritm to apply to the corpus', choices=algorithms)
     args = parser.parse_args()
     # Build corpus from largest int and directory (Check valid directory)
-    # For each int in the param list then apply the corpus algorithm using a sliced corpus
-    # Save any mm, index files, etc to a directory so they can be used again.
-    # Log temporal time
+    if isdir(args.directory):
+        max_corpus = max(args.integers)
+        # Build corpus of size max_corpus
+        for size in args.integers:
+            print size
+            # For each int in the param list then apply the corpus algorithm using a sliced corpus
+            # Save any mm, index files, etc to a directory so they can be used again.
+            # Log temporal time
+    else:
+        print "Directory argument should be a valid directory"
 
 
 if __name__ == "__main__": main()
