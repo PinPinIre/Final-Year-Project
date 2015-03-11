@@ -13,9 +13,11 @@ ignore_words = stopwords.words("english")
 class Corpus(object):
     """Wrapper class around Corpus streaming"""
 
-    def __init__(self, directory=None, dictionary=None, corpus=None):
+    def __init__(self, directory=None, dictionary=None, corpus=None, max_docs=None):
         if directory:
             docs = [join(directory, doc) for doc in listdir(directory) if isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"]
+            # Trim List
+            if max_docs: docs = docs[:max_docs]
             """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
             dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
             once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
