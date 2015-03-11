@@ -22,8 +22,8 @@ def run_algo(directory, ints, algorithm):
     log = open(log_file, 'a+')
     base_corpus_file = corpus_loc % max_corpus
     start_time = datetime.datetime.now()
-    # Build corpus of size max_corpus
-    base_corpus = corpus.Corpus(directory=directory)
+    # Build corpus of size max_corpus and save to be reused
+    base_corpus = corpus.Corpus(directory=directory, max_docs=max_corpus)
     base_corpus.save(dictionary_loc, base_corpus_file)
     end_time = datetime.datetime.now()
     base_corpus_build_time = end_time - start_time
