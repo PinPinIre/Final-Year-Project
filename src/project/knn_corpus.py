@@ -32,12 +32,12 @@ class KNNCorpus(Corpus):
     def find_nn(self, doc_no, neighbours):
         return self.index.get_nns_by_item(doc_no, neighbours)
 
-    def save(self, index):
-        self.index.save(index)
+    def save(self, dictionary_file=None, corpus_file=None, sup_file="knn.knn"):
+        self.index.save(sup_file)
 
     @classmethod
-    def load(cls, dictionary, corpus, index_file):
-        return cls(dictionary=dictionary, corpus=corpus, index_file=index_file)
+    def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
+        return cls(dictionary=dictionary_file, corpus=corpus_file, index_file=sup_file)
 
 
 def main():

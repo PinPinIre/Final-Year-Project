@@ -30,13 +30,13 @@ class W2VCorpus(Corpus):
             # Todo: Raise exception?
             return None
 
-    def save(self, file):
-        super(W2VCorpus, self).save(self.dict_loc, self.vec_loc)
-        if self.model: self.model.save(file)
+    def save(self, dictionary_file="w2v_corpus.dict", corpus_file="corpus.mm", sup_file="vector.w2vs"):
+        Corpus.save(self, dictionary_file, corpus_file)
+        if self.model: self.model.save(sup_file)
 
     @classmethod
-    def load(cls, dictionary, corpus, w2v_file):
-        return cls(dictionary=dictionary, corpus=corpus, w2v_model=w2v_file)
+    def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
+        return cls(dictionary=dictionary_file, corpus=corpus_file, w2v_model=sup_file)
 
 
 def main():

@@ -48,15 +48,14 @@ class Corpus(object):
             for doc in docs:
                 yield doc
 
-    def save(self, dictionary, file):
-        # TODO: Investigate saving to another file format, more memory efficient?
-        Dictionary.save(self.dictionary, dictionary)
-        MmCorpus.serialize(file, self)
+    def save(self, dictionary_file="corpus.dict", corpus_file="corpus.mm", sup_file=None):
+        Dictionary.save(self.dictionary, dictionary_file)
+        MmCorpus.serialize(corpus_file, self)
 
     @classmethod
-    def load(cls, dictionary, corpus):
-        if isfile(dictionary) and isfile(corpus):
-            return cls(dictionary=dictionary, corpus=corpus)
+    def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
+        if isfile(dictionary_file) and isfile(corpus_file):
+            return cls(dictionary=dictionary_file, corpus=corpus_file)
         return False
 
     def __len__(self):
@@ -64,11 +63,11 @@ class Corpus(object):
 
     def transform_corpus(self, transformation):
         """
-            Function to transform one corpus representation into another. Applying Transformations can be can be costly
-            as they are done on the fly. Save to disk first if access will be frequent
+        Function to transform one corpus representation into another. Applying Transformations can be can be costly
+        as they are done on the fly. Save to disk first if access will be frequent
 
-            transformation: Transformation to be applied to the corpus
-            returns: Corpus object with transformation applied
+        :param transformation: Transformation to be applied to the corpus
+        :return:
         """
         self.docs = self.transformation[self.docs]
         transformed_model = transformation(self.docs)
@@ -76,6 +75,12 @@ class Corpus(object):
         return
 
     def clip_corpus(self, max_docs=None):
+        """
+        Function to clip a copus to a max size, if max_doc is none then the the corpus remains it's current size
+
+        :param max_docs:
+        :return:
+        """
         self.docs = ClippedCorpus(self.docs, max_docs)
 
     def get_train_time(self):

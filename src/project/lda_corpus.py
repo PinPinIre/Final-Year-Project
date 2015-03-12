@@ -32,13 +32,13 @@ class LDACorpus(Corpus):
         #self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, update_every=self.update, chunksize=self.chunksize, passes=self.passes)
         return models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, iterations=500)
 
-    def save(self, dictionary, file, lda_file):
-        Corpus.save(self, dictionary, file)
-        self.model.save(lda_file)
+    def save(self, dictionary_file="lda_corpus.dict", corpus_file="corpus.mm", sup_file="topics.lda"):
+        Corpus.save(self, dictionary_file, corpus_file)
+        self.model.save(sup_file)
 
     @classmethod
-    def load(cls, dictionary, corpus, lda_file):
-        return cls(dictionary=dictionary, corpus=corpus, lda_corpus=lda_file)
+    def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
+        return cls(dictionary=dictionary_file, corpus=corpus_file, lda_corpus=sup_file)
 
 
 def main():
