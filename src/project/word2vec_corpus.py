@@ -7,8 +7,8 @@ from gensim import models
 
 class W2VCorpus(Corpus):
 
-    def __init__(self, directory=None, dictionary=None, corpus=None, w2v_model=None, max_docs=None):
-        Corpus.__init__(self, directory=directory, dictionary=dictionary, corpus=corpus)
+    def __init__(self, dictionary=None, corpus=None, w2v_model=None, max_docs=None):
+        Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
         self.clip_corpus(max_docs)
         self.dict_loc = dictionary
         self.vec_loc = corpus
@@ -43,10 +43,10 @@ def main():
     w2v = "w2vcorpus.w2v"
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
         if not isfile(w2v):
-            corpus = W2VCorpus(sys.argv[1], sys.argv[2], sys.argv[3])
+            corpus = W2VCorpus(dictionary=sys.argv[2], corpus=sys.argv[3])
             corpus.save(w2v)
         else:
-            corpus = W2VCorpus.load(sys.argv[2], sys.argv[3], w2v)
+            corpus = W2VCorpus.load(dictionary_file=sys.argv[2], corpus_file=sys.argv[3], sup_file=w2v)
         time = corpus.get_train_time()
         print "W2V Train Time:\t" + str(time)
     else:

@@ -44,9 +44,9 @@ def main():
     knn_file = "KNN.index"
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
         if not isfile(knn_file):
-            corpus = KNNCorpus(sys.argv[2], sys.argv[3])
-            corpus.save(knn_file)
-        corpus = KNNCorpus.load(sys.argv[2], sys.argv[3], knn_file)
+            corpus = KNNCorpus(dictionary=sys.argv[2], corpus=sys.argv[3])
+            corpus.save(sup_file=knn_file)
+        corpus = KNNCorpus.load(dictionary_file=sys.argv[2], corpus_file=sys.argv[3], sup_file=knn_file)
         print corpus.find_nn(0, 10)
         time = corpus.get_train_time()
         print "KNN Train Time:\t" + str(time)

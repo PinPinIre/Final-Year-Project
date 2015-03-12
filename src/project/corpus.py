@@ -49,8 +49,8 @@ class Corpus(object):
                 yield doc
 
     def save(self, dictionary_file="corpus.dict", corpus_file="corpus.mm", sup_file=None):
-        Dictionary.save(self.dictionary, dictionary_file)
-        MmCorpus.serialize(corpus_file, self)
+        if dictionary_file: Dictionary.save(self.dictionary, dictionary_file)
+        if corpus_file: MmCorpus.serialize(corpus_file, self)
 
     @classmethod
     def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
@@ -120,8 +120,8 @@ def main():
         corpus = Corpus(directory=sys.argv[1])
         # TODO: Write proper tests
         #corpus.transform_corpus(models.TfidfModel)
-        corpus.save(sys.argv[2], sys.argv[3])
-        load_corpus.load(sys.argv[2], sys.argv[3])
+        corpus.save(dictionary_file=sys.argv[2], corpus_file=sys.argv[3])
+        load_corpus.load(dictionary_file=sys.argv[2], corpus_file=sys.argv[3])
     else:
         print "Corpus requires directory as an argument."
 

@@ -48,8 +48,8 @@ def main():
             corpus = LDACorpus.load(sys.argv[2], sys.argv[3], sys.argv[4])
         else:
             # Otherwise build LDA model
-            corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=100)
-            corpus.save("LDA.dict", "LDA.mm", "LDA.lda")
+            corpus = LDACorpus(dictionary=sys.argv[2], corpus=sys.argv[3], no_topics=100)
+            corpus.save(dictionary_file="LDA.dict", corpus_file="LDA.mm", sup_file="LDA.lda")
         time = corpus.get_train_time()
         print "LDA Train Time:\t" + str(time)
     else:
