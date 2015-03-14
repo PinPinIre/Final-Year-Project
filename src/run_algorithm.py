@@ -10,8 +10,8 @@ algorithms = {"lda": lda_corpus.LDACorpus,
 
 base_dir = getcwd()
 output_loc = base_dir + "/%s.corpus_out"
-dictionary_loc = output_loc + "/%dcorpus.dict"
-corpus_loc = output_loc + "/%dcorpus.mm"
+dictionary_loc = output_loc + "/%scorpus.dict"
+corpus_loc = output_loc + "/%scorpus.mm"
 log_file = output_loc + "/runtimes.log"
 sup_file_loc = output_loc + "/%d.%s"
 
@@ -23,8 +23,8 @@ def run_algo(directory, ints, algorithm):
     if not exists(output_dir):
         makedirs(output_dir)
     log = open(log_file % algorithm, 'a+')
-    base_corpus_file = corpus_loc % (algorithm, max_corpus)
-    max_dict = dictionary_loc % (algorithm, max_corpus)
+    base_corpus_file = corpus_loc % (algorithm, "base_")
+    max_dict = dictionary_loc % (algorithm, "base_")
     start_time = datetime.datetime.now()
 
     # Build corpus of size max_corpus and save to be reused
@@ -36,7 +36,6 @@ def run_algo(directory, ints, algorithm):
 
     # For each int in the param list then apply the corpus algorithm using a sliced corpus
     for size in ints:
-        if size is max_corpus: continue
         test_corpus = algorithms[algorithm](dictionary=max_dict, corpus=base_corpus_file, max_docs=size)
 
         # Save any mm, index files, etc to a directory so they can be used again.
