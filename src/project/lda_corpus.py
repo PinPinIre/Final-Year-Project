@@ -29,10 +29,9 @@ class LDACorpus(Corpus):
         if self.model: return self.model.print_topics(100, num_words=num_words)
 
     def train_model(self):
-        #self.model = models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, update_every=self.update, chunksize=self.chunksize, passes=self.passes)
         return models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, iterations=500)
 
-    def save(self, dictionary_file="lda_corpus.dict", corpus_file="corpus.mm", sup_file="topics.lda"):
+    def save(self, dictionary_file=None, corpus_file=None, sup_file="topics.lda"):
         Corpus.save(self, dictionary_file, corpus_file)
         self.model.save(sup_file)
 
@@ -49,7 +48,7 @@ def main():
         else:
             # Otherwise build LDA model
             corpus = LDACorpus(dictionary=sys.argv[2], corpus=sys.argv[3], no_topics=100)
-            corpus.save(dictionary_file="LDA.dict", corpus_file="LDA.mm", sup_file="LDA.lda")
+            corpus.save(sup_file="LDA.lda")
         time = corpus.get_train_time()
         print "LDA Train Time:\t" + str(time)
     else:

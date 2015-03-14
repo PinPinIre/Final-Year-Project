@@ -15,7 +15,7 @@ class W2VCorpus(Corpus):
         self.model = None
         start_time = datetime.datetime.now()
         if not w2v_model:
-            # Todo: Tweak the default paramaters
+            # Todo: Tweak the default parameters
             self.model = models.Word2Vec(self.docs.get_texts(), size=100, window=5, min_count=5, workers=4)
         else:
             self.model = models.Word2Vec.load(w2v_model)
