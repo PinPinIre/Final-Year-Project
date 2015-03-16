@@ -6,7 +6,7 @@ from gensim import models
 
 
 class W2VCorpus(Corpus):
-
+    # TODO: the clipped corpus class doesn't implement get_texts(), investigate this
     def __init__(self, dictionary=None, corpus=None, w2v_model=None, max_docs=None):
         Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
         self.clip_corpus(max_docs)
