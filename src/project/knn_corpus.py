@@ -10,7 +10,7 @@ from annoy import AnnoyIndex
 class KNNCorpus(Corpus):
     no_trees = 10 # TODO: Tweak this Annoy param
 
-    def __init__(self, dictionary=None, corpus=None, index_file=None, max_docs=None):
+    def __init__(self, dictionary=None, corpus=None, index_file=None, max_docs=None, **kwargs):
         Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
         self.clip_corpus(max_docs)
         # Set up for KNN
