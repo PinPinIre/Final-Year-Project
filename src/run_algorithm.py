@@ -26,17 +26,18 @@ def run_algo(directory, ints, algorithm):
     base_corpus_file = corpus_loc % (algorithm, "base_")
     max_dict = dictionary_loc % (algorithm, "base_")
     start_time = datetime.datetime.now()
-
-    # Build corpus of size max_corpus and save to be reused
-    base_corpus = corpus.Corpus(directory=directory, max_docs=max_corpus)
-    base_corpus.save(max_dict, base_corpus_file)
+    if algorithm != "w2v":
+        # Build corpus of size max_corpus and save to be reused
+        base_corpus = corpus.Corpus(directory=directory, max_docs=max_corpus)
+        base_corpus.save(max_dict, base_corpus_file)
+        directory = None
     end_time = datetime.datetime.now()
     base_corpus_build_time = end_time - start_time
     log.write(("base_corpus_build_time %d:\t" % max_corpus) + str(base_corpus_build_time) + "\n")
 
     # For each int in the param list then apply the corpus algorithm using a sliced corpus
     for size in ints:
-        test_corpus = algorithms[algorithm](dictionary=max_dict, corpus=base_corpus_file, max_docs=size)
+        test_corpus = algorithms[algorithm](directory=directory, dictionary=max_dict, corpus=base_corpus_file, max_docs=size)
 
         # Save any mm, index files, etc to a directory so they can be used again.
         dict_loc = dictionary_loc % (algorithm, size)
