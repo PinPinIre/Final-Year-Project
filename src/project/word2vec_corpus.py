@@ -7,15 +7,14 @@ from gensim import models
 
 class W2VCorpus(Corpus):
     # TODO: the clipped corpus class doesn't implement get_texts(), investigate this
-    def __init__(self, dictionary=None, corpus=None, w2v_model=None, max_docs=None):
-        Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
-        self.clip_corpus(max_docs)
+    def __init__(self, directory=None, dictionary=None, corpus=None, w2v_model=None, max_docs=None):
+        Corpus.__init__(self, directory=directory, dictionary=dictionary, corpus=corpus, max_docs=max_docs)
         self.dict_loc = dictionary
         self.vec_loc = corpus
         self.model = None
         start_time = datetime.datetime.now()
         if not w2v_model:
-            # Todo: Tweak the default parameters
+            # Todo: Tweak the default parameter
             self.model = models.Word2Vec(self.docs.get_texts(), size=100, window=5, min_count=5, workers=4)
         else:
             self.model = models.Word2Vec.load(w2v_model)
@@ -38,13 +37,17 @@ class W2VCorpus(Corpus):
     def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
         return cls(dictionary=dictionary_file, corpus=corpus_file, w2v_model=sup_file)
 
+    def clip_corpus(self, max_docs=None):
+        # Override the default clip_corpus function to do nothing.
+        pass
+
 
 def main():
     w2v = "w2vcorpus.w2v"
-    if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
+    if len(sys.argv) is 4 and isdir(sys.argv[1]):
         if not isfile(w2v):
-            corpus = W2VCorpus(dictionary=sys.argv[2], corpus=sys.argv[3])
-            corpus.save(w2v)
+            corpus = W2VCorpus(directory=sys.argv[1])
+            corpus.save(dictionary_file=sys.argv[2], corpus_file=sys.argv[3] ,sup_file=w2v)
         else:
             corpus = W2VCorpus.load(dictionary_file=sys.argv[2], corpus_file=sys.argv[3], sup_file=w2v)
         time = corpus.get_train_time()
