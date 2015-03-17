@@ -23,14 +23,14 @@ def run_sim(ints, algorithm):
         return
     log = open(log_file % algorithm, 'a+')
     for size in ints:
-        corpus_dict = dictionary_loc % size
-        corpus = corpus_loc % size
-        sup_file = sup_file_loc % (size, algorithm)
-        test_corpus = algorithms[algorithm].load(dictionary=corpus_dict, corpus=corpus, sup_file=sup_file)
+        corpus_dict = dictionary_loc % (algorithm, size)
+        corpus = corpus_loc % (algorithm, size)
+        sup_file = sup_file_loc % (algorithm, size, algorithm)
+        test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corpus, sup_file=sup_file)
         # Run some queries on the corpus
 
         # Log temporal time
-        log.write("%s %d query time:\t" % (algorithm, size) + str(test_corpus.get_train_time()) + "\n")
+        # log.write("%s %d query time:\t" % (algorithm, size) + str(test_corpus.get_train_time()) + "\n")
     log.close()
 
 
