@@ -44,6 +44,10 @@ class LDACorpus(Corpus):
         if not num_features: num_features = self.no_topics
         self.sim_index = Similarity(index_dir, self, num_features=num_features)
 
+    def run_query(self, query, index_location):
+        if not self.sim_index: self._build_sim_index(index_dir=index_location)
+        # Do some query stuff
+
 
 def main():
     if len(sys.argv) is 5 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
