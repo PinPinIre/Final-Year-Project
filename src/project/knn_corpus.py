@@ -39,6 +39,11 @@ class KNNCorpus(Corpus):
     def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
         return cls(dictionary=dictionary_file, corpus=corpus_file, index_file=sup_file)
 
+    def run_query(self, query, index_location, best_matches):
+        # TODO: Convert query into an annoy vector
+        matches = self.index.get_nns_by_vector(query, best_matches)
+        return matches
+
 
 def main():
     knn_file = "KNN.index"
