@@ -34,6 +34,7 @@ class Corpus(object):
             self.docs = PaperCorpus([])
         self.transformation = IdentityTransformation()
         self.train_time = None
+        self.sim_index = None
         return
 
     def __iter__(self):
@@ -85,6 +86,9 @@ class Corpus(object):
 
     def get_train_time(self):
         return self.train_time
+
+    def _build_sim_index(self, index_dir=None, num_features=None):
+        pass
 
 
 class PaperCorpus(TextCorpus):
