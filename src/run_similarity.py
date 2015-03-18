@@ -14,11 +14,14 @@ dictionary_loc = output_loc + "/%scorpus.dict"
 corpus_loc = output_loc + "/%scorpus.mm"
 log_file = output_loc + "/Sim_runtimes.log"
 sup_file_loc = output_loc + "/%d.%s"
+index_loc = output_loc + "/%d%s.simindex"
+query_dict = output_loc + "/query.dict"
+query_corp = output_loc + "query.mm"
 
 
-def load_queries(query_dir):
-    # TODO: Load and process sample files for queries
-    return list()
+def load_queries(query_dir, dictionary):
+    query_corpus = corpus.Corpus(directory=query_dir, dictionary=dictionary)
+    return query_corpus
 
 
 def run_sim(ints, algorithm, query_files):
@@ -27,7 +30,8 @@ def run_sim(ints, algorithm, query_files):
         print "Output directory for %s must exist already. Run run_algorithm.py first." % algorithm
         return
     log = open(log_file % algorithm, 'a+')
-    queries = load_queries(query_files)
+    max_dict = dictionary_loc % (algorithm, "base_")
+    queries = load_queries(query_files, max_dict)
     for size in ints:
         corpus_dict = dictionary_loc % (algorithm, size)
         corp = corpus_loc % (algorithm, size)
@@ -35,8 +39,12 @@ def run_sim(ints, algorithm, query_files):
         test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corp, sup_file=sup_file)
 
         start_time = datetime.datetime.now()
-        for query in queries:
-            test_corpus.run_query(query)
+        if algorithm != "w2v":
+            for i, query in enumerate(queries):
+                most_sim = test_corpus.run_query(query, index_loc % (algorithm, size, algorithm), 10)
+                # TODO: Log the similarities to a file for inspection
+        else:
+            print "w2v currently not supported"
         end_time = datetime.datetime.now()
 
         query_time = end_time - start_time
@@ -46,9 +54,9 @@ def run_sim(ints, algorithm, query_files):
 
 def main():
     parser = argparse.ArgumentParser(description='Run queries on bow corpus generated from the arxiv corpus.')
+    parser.add_argument('directory', help='directory for the query files')
     parser.add_argument('integers', metavar='N', type=int, nargs='+', help='size values for the corpus')
     parser.add_argument('algorithm', help='algorithm to apply to the corpus', choices=algorithms)
-    parser.add_argument('directory', help='directory for the query files')
     args = parser.parse_args()
     run_sim(args.integers, args.algorithm, args.directory)
 
