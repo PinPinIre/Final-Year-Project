@@ -40,8 +40,8 @@ class KNNCorpus(Corpus):
         return cls(dictionary=dictionary_file, corpus=corpus_file, index_file=sup_file)
 
     def run_query(self, query, index_location, best_matches):
-        # TODO: Convert query into an annoy vector
-        matches = self.index.get_nns_by_vector(query, best_matches)
+        vector = sparse2full(query, len(self.dictionary)).tolist()
+        matches = self.index.get_nns_by_vector(vector, best_matches)
         return matches
 
 
