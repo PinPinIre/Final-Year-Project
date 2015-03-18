@@ -33,6 +33,7 @@ class KNNCorpus(Corpus):
         return self.index.get_nns_by_item(doc_no, neighbours)
 
     def save(self, dictionary_file=None, corpus_file=None, sup_file="knn.knn"):
+        Corpus.save(self, dictionary_file, corpus_file)
         self.index.save(sup_file)
 
     @classmethod

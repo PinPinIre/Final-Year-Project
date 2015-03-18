@@ -42,6 +42,7 @@ def run_sim(ints, algorithm, query_files):
         if algorithm != "w2v":
             for i, query in enumerate(queries):
                 most_sim = test_corpus.run_query(query, index_loc % (algorithm, size, algorithm), 10)
+                print most_sim
                 # TODO: Log the similarities to a file for inspection
         else:
             print "w2v currently not supported"
@@ -54,8 +55,8 @@ def run_sim(ints, algorithm, query_files):
 
 def main():
     parser = argparse.ArgumentParser(description='Run queries on bow corpus generated from the arxiv corpus.')
-    parser.add_argument('directory', help='directory for the query files')
     parser.add_argument('integers', metavar='N', type=int, nargs='+', help='size values for the corpus')
+    parser.add_argument('directory', help='directory for the query files')
     parser.add_argument('algorithm', help='algorithm to apply to the corpus', choices=algorithms)
     args = parser.parse_args()
     run_sim(args.integers, args.algorithm, args.directory)
