@@ -18,13 +18,16 @@ class Corpus(object):
             docs = [join(directory, doc) for doc in listdir(directory) if isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"]
             # Trim List
             if max_docs: docs = docs[:max_docs]
-            """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
-            dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
-            once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
-            dictionary.filter_tokens(once_words)    # Exclude if appears once
-            dictionary.compactify()                 # Remove gaps in ids left by removing words
-            dictionary.filter_extremes(no_below=20) # Filter if in less than 10 docs
-            self.dictionary = dictionary
+            if not dictionary:
+                """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
+                dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
+                once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
+                dictionary.filter_tokens(once_words)    # Exclude if appears once
+                dictionary.compactify()                 # Remove gaps in ids left by removing words
+                dictionary.filter_extremes(no_below=20) # Filter if in less than 10 docs
+                self.dictionary = dictionary
+            else:
+                self.dictionary = Dictionary.load(dictionary)
             self.docs = PaperCorpus(docs)
         elif dictionary and corpus:
             self.dictionary = Dictionary.load(dictionary)
