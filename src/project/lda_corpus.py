@@ -4,7 +4,6 @@ from os.path import isdir, isfile
 from gensim import models
 from corpus import Corpus
 from gensim.similarities import Similarity
-from gensim.matutils import sparse2full
 
 
 class LDACorpus(Corpus):
