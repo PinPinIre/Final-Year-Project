@@ -15,7 +15,7 @@ class Corpus(object):
 
     def __init__(self, directory=None, dictionary=None, corpus=None, max_docs=None):
         if directory:
-            docs = [join(directory, doc) for doc in listdir(directory) if isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"]
+            docs = self.get_docs(directory)
             # Trim List
             if max_docs: docs = docs[:max_docs]
             if not dictionary:
@@ -92,6 +92,10 @@ class Corpus(object):
 
     def _build_sim_index(self, index_dir=None, num_features=None):
         pass
+
+    @staticmethod
+    def get_docs(directory):
+        return [join(directory, doc) for doc in listdir(directory) if isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"]
 
 
 class PaperCorpus(TextCorpus):
