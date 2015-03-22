@@ -2,6 +2,7 @@ import sys
 import codecs
 from os import listdir
 from os.path import isdir, isfile, join, splitext
+from random import sample
 from nltk.corpus import stopwords
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
@@ -13,11 +14,9 @@ ignore_words = stopwords.words("english")
 class Corpus(object):
     """Wrapper class around Corpus streaming"""
 
-    def __init__(self, directory=None, dictionary=None, corpus=None, max_docs=None):
-        if directory:
-            docs = self.get_docs(directory)
-            # Trim List
-            if max_docs: docs = docs[:max_docs]
+    def __init__(self, directory=None, dictionary=None, distributions=None, corpus=None, max_docs=None):
+        if directory and distributions:
+            docs = self.get_docs(directory, distributions, max_docs)
             if not dictionary:
                 """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
                 dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
@@ -94,8 +93,19 @@ class Corpus(object):
         pass
 
     @staticmethod
-    def get_docs(directory):
-        return [join(directory, doc) for doc in listdir(directory) if isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"]
+    def get_docs(directory, distributions, max_docs):
+        if max_docs and max_docs <= distributions["total"]:
+            max_dis = max_docs / distributions["total"]
+        else:
+            max_dis = 1
+        docs = list()
+        for name in distributions:
+            if name is "total": continue
+            current_dis = distributions[name] / distributions["total"]
+            current_dir = join(directory, name)
+            temp = [join(current_dir, doc) for doc in listdir(current_dir) if isfile(join(current_dir, doc)) and splitext(doc)[-1] == ".txt"]
+            docs.extend(sample(temp, int(len(temp) * current_dis * max_dis)))
+        return
 
 
 class PaperCorpus(TextCorpus):

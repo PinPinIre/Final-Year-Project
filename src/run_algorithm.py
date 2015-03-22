@@ -1,7 +1,7 @@
 import argparse
 import datetime
 from os import makedirs, getcwd
-from os.path import isdir, exists
+from os.path import isdir, exists, join
 from project import corpus, knn_corpus, lda_corpus, word2vec_corpus
 
 algorithms = {"lda": lda_corpus.LDACorpus,
@@ -16,6 +16,19 @@ log_file = output_loc + "/runtimes.log"
 sup_file_loc = output_loc + "/%d.%s"
 
 
+def get_file_distributions(directory):
+    distributions = dict()
+    total = 0
+    log = join(directory, "paperstats.log")
+    with open(log) as file:
+        for line in file:
+            name, count = line.split("\t")
+            distributions[name] = float(count)
+            total = total + float(count)
+    distributions["total"] = total
+    return distributions
+
+
 def run_algo(directory, ints, algorithm):
     # Build corpus from largest int and directory (Check valid directory)
     max_corpus = max(ints)
@@ -25,10 +38,11 @@ def run_algo(directory, ints, algorithm):
     log = open(log_file % algorithm, 'a+')
     base_corpus_file = corpus_loc % (algorithm, "base_")
     max_dict = dictionary_loc % (algorithm, "base_")
+    distributions = get_file_distributions(directory)
     start_time = datetime.datetime.now()
     if algorithm != "w2v":
         # Build corpus of size max_corpus and save to be reused
-        base_corpus = corpus.Corpus(directory=directory, max_docs=max_corpus)
+        base_corpus = corpus.Corpus(directory=directory, max_docs=max_corpus, distributions=distributions)
         base_corpus.save(max_dict, base_corpus_file)
         directory = None
     end_time = datetime.datetime.now()
