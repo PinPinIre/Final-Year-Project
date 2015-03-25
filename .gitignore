@@ -63,3 +63,4 @@ target/
 *.w2v
 */backup
 *.lda
+*.corpus_out
