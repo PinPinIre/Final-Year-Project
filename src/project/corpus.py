@@ -3,6 +3,7 @@ import codecs
 from os import listdir
 from os.path import isdir, isfile, join, splitext
 from random import sample
+from math import ceil
 from nltk.corpus import stopwords
 from gensim.interfaces import TransformationABC
 from gensim.corpora import Dictionary, MmCorpus, TextCorpus
@@ -21,9 +22,9 @@ class Corpus(object):
                 """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
                 dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
                 once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
-                dictionary.filter_tokens(once_words)    # Exclude if appears once
-                dictionary.compactify()                 # Remove gaps in ids left by removing words
-                dictionary.filter_extremes(no_below=20) # Filter if in less than 10 docs
+                dictionary.filter_tokens(once_words)     # Exclude if appears once
+                dictionary.compactify()                  # Remove gaps in ids left by removing words
+                dictionary.filter_extremes(no_below=20)  # Filter if in less than 10 docs
                 self.dictionary = dictionary
             else:
                 self.dictionary = Dictionary.load(dictionary)
@@ -52,8 +53,12 @@ class Corpus(object):
                 yield doc
 
     def save(self, dictionary_file="corpus.dict", corpus_file="corpus.mm", sup_file=None):
-        if dictionary_file: Dictionary.save(self.dictionary, dictionary_file)
-        if corpus_file: MmCorpus.serialize(corpus_file, self)
+        if dictionary_file:
+            Dictionary.save(self.dictionary, dictionary_file)
+        if corpus_file:
+            MmCorpus.serialize(corpus_file, self)
+        if sup_file and type(self.docs) is PaperCorpus:
+            self.docs.save(sup_file)
 
     @classmethod
     def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
@@ -100,12 +105,13 @@ class Corpus(object):
             max_dis = 1
         docs = list()
         for name in distributions:
-            if name is "total": continue
+            if name is "total":
+                continue
             current_dis = distributions[name] / distributions["total"]
             current_dir = join(directory, name)
             temp = [join(current_dir, doc) for doc in listdir(current_dir) if isfile(join(current_dir, doc)) and splitext(doc)[-1] == ".txt"]
-            docs.extend(sample(temp, int(len(temp) * current_dis * max_dis)))
-        return
+            docs.extend(sample(temp, int(ceil(len(temp) * current_dis * max_dis))))
+        return docs
 
 
 class PaperCorpus(TextCorpus):
@@ -114,6 +120,12 @@ class PaperCorpus(TextCorpus):
         for doc in self.input:
             handle = codecs.open(doc, encoding='utf-8')
             yield filter_common(handle.read().lower().split())
+
+    def save(self, sup_file):
+        file_log = open(sup_file, 'a+')
+        for doc in self.input:
+            file_log.write("%s\n" % doc)
+        file_log.close()
 
 
 class IdentityTransformation(TransformationABC):
@@ -140,10 +152,11 @@ def main():
         load_corpus = Corpus()
         corpus = Corpus(directory=sys.argv[1])
         # TODO: Write proper tests
-        #corpus.transform_corpus(models.TfidfModel)
+        # corpus.transform_corpus(models.TfidfModel)
         corpus.save(dictionary_file=sys.argv[2], corpus_file=sys.argv[3])
         load_corpus.load(dictionary_file=sys.argv[2], corpus_file=sys.argv[3])
     else:
         print "Corpus requires directory as an argument."
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
