@@ -12,6 +12,7 @@ base_dir = getcwd()
 output_loc = base_dir + "/%s.corpus_out"
 dictionary_loc = output_loc + "/%scorpus.dict"
 corpus_loc = output_loc + "/%scorpus.mm"
+file_logs = output_loc + "/%sfiles.log"
 log_file = output_loc + "/runtimes.log"
 sup_file_loc = output_loc + "/%d.%s"
 
@@ -40,24 +41,21 @@ def run_algo(directory, ints, algorithm):
 
     # For each int in the param list then apply the corpus algorithm using a sliced corpus
     for size in ints:
+        new_directory = directory
         corpus_file = corpus_loc % (algorithm, "%d_" % size)
         corp_dict = dictionary_loc % (algorithm, "%d_" % size)
+        sup_loc = sup_file_loc % (algorithm, size, algorithm)
+        file_log = file_logs % (algorithm, size)
         start_time = datetime.datetime.now()
         if algorithm != "w2v":
             # Build corpus of size max_corpus and save to be reused
-            current_corpus = corpus.Corpus(directory=directory, max_docs=max_corpus, distributions=distributions)
-            current_corpus.save(corp_dict, corpus_file)
-            directory = None
+            current_corpus = corpus.Corpus(directory=directory, max_docs=size, distributions=distributions)
+            current_corpus.save(dictionary_file=corp_dict, corpus_file=corpus_file, sup_file=file_log)
+            new_directory = None
         end_time = datetime.datetime.now()
         current_corpus_build_time = end_time - start_time
         log.write("%s_corpus_build_time %d:\t%s\n" % (algorithm, size, current_corpus_build_time))
-        test_corpus = algorithms[algorithm](directory=directory, dictionary=corp_dict, corpus=corpus_file, max_docs=size)
-
-        # Save any mm, index files, etc to a directory so they can be used again.
-        dict_loc = dictionary_loc % (algorithm, size)
-        corp_loc = corpus_loc % (algorithm, size)
-        sup_loc = sup_file_loc % (algorithm, size, algorithm)
-        test_corpus.save(dictionary_file=dict_loc, corpus_file=corp_loc, sup_file=sup_loc)
+        test_corpus = algorithms[algorithm](directory=new_directory, dictionary=corp_dict, corpus=corpus_file, max_docs=size, distributions=distributions)
 
         # Log temporal time
         log.write("%s %d train time:\t" % (algorithm, size) + str(test_corpus.get_train_time()) + "\n")
