@@ -12,8 +12,9 @@ base_dir = getcwd()
 output_loc = base_dir + "/%s.corpus_out"
 dictionary_loc = output_loc + "/%scorpus.dict"
 corpus_loc = output_loc + "/%scorpus.mm"
-log_file = output_loc + "/Sim_runtimes.log"
 sup_file_loc = output_loc + "/%d.%s"
+
+log_file = output_loc + "/sim_runtimes.log"
 index_loc = output_loc + "/%d%s.simindex"
 query_dict = output_loc + "/query.dict"
 query_corp = output_loc + "query.mm"
@@ -23,7 +24,8 @@ def load_queries(query_dir, dictionary, algorithm):
     if algorithm != "w2v":
         query_corpus = corpus.Corpus(directory=query_dir, dictionary=dictionary)
     else:
-        docs = corpus.Corpus.get_docs(query_dir)
+        with open(list_files) as f:
+            docs = [line.strip() for line in f]
         query_corpus = corpus.PaperCorpus(docs).get_texts()
     return query_corpus
 

@@ -12,9 +12,10 @@ base_dir = getcwd()
 output_loc = base_dir + "/%s.corpus_out"
 dictionary_loc = output_loc + "/%scorpus.dict"
 corpus_loc = output_loc + "/%scorpus.mm"
+sup_file_loc = output_loc + "/%d.%s"
+
 file_logs = output_loc + "/%sfiles.log"
 log_file = output_loc + "/runtimes.log"
-sup_file_loc = output_loc + "/%d.%s"
 
 
 def get_file_distributions(directory):
