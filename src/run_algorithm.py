@@ -54,11 +54,11 @@ def run_algo(directory, ints, algorithm):
             new_directory = None
         end_time = datetime.datetime.now()
         current_corpus_build_time = end_time - start_time
-        log.write("%s_corpus_build_time %d:\t%s\n" % (algorithm, size, current_corpus_build_time))
+        log.write("%s_corpus_build_time:\t%d\t%s\n" % (algorithm, size, current_corpus_build_time))
         test_corpus = algorithms[algorithm](directory=new_directory, dictionary=corp_dict, corpus=corpus_file, max_docs=size, distributions=distributions)
 
         # Log temporal time
-        log.write("%s %d train time:\t" % (algorithm, size) + str(test_corpus.get_train_time()) + "\n")
+        log.write("%s_train_time:\t%d\t%s\n" % (algorithm, size, test_corpus.get_train_time()))
     log.close()
 
 
