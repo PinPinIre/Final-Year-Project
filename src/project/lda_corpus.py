@@ -27,13 +27,15 @@ class LDACorpus(Corpus):
         self.train_time = end_time - start_time
 
     def print_topics(self, num_words=10):
-        if self.model: return self.model.print_topics(100, num_words=num_words)
+        if self.model:
+            return self.model.print_topics(100, num_words=num_words)
 
     def train_model(self):
         return models.ldamodel.LdaModel(corpus=self, id2word=self.dictionary, num_topics=self.no_topics, iterations=500)
 
     def save(self, dictionary_file=None, corpus_file=None, sup_file="topics.lda"):
-        Corpus.save(self, dictionary_file, corpus_file)
+        if dictionary_file and corpus_file:
+            Corpus.save(self, dictionary_file, corpus_file)
         self.model.save(sup_file)
 
     @classmethod
@@ -41,12 +43,14 @@ class LDACorpus(Corpus):
         return cls(dictionary=dictionary_file, corpus=corpus_file, lda_corpus=sup_file)
 
     def _build_sim_index(self, index_dir="corpusindex", num_features=None, best_matches=10):
-        if not num_features: num_features = self.no_topics
+        if not num_features:
+            num_features = self.no_topics
         self.sim_index = Similarity(index_dir, self.model[self], num_features=num_features)
         self.sim_index.num_best = best_matches
 
     def run_query(self, query, index_location, best_matches):
-        if not self.sim_index: self._build_sim_index(index_dir=index_location, best_matches=best_matches)
+        if not self.sim_index:
+            self._build_sim_index(index_dir=index_location, best_matches=best_matches)
         vector = self.model[query]
         return self.sim_index[vector]
 
