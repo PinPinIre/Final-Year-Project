@@ -8,7 +8,7 @@ from gensim import models
 # TODO: Investigate the similarity query
 class W2VCorpus(object):
 
-    def __init__(self, directory=None, w2v_model=None, list_files=None, max_docs=None, **kwargs):
+    def __init__(self, directory=None, w2v_model=None, list_files=None, max_docs=None, distributions=None, **kwargs):
         if list_files:
             with open(list_files) as f:
                 docs = [line.strip() for line in f]
@@ -45,6 +45,9 @@ class W2VCorpus(object):
         docs = docs.get_texts()
         for doc_id, doc in enumerate(docs):
             yield models.doc2vec.LabeledSentence(words=doc, labels=['DOC_%s' % doc_id])
+
+    def get_train_time(self):
+        return self.train_time
 
     def run_query(self, query, index_location, best_matches):
         return self.similarity(query)
