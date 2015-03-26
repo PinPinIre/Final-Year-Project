@@ -14,6 +14,7 @@ dictionary_loc = output_loc + "/%scorpus.dict"
 corpus_loc = output_loc + "/%scorpus.mm"
 sup_file_loc = output_loc + "/%d.%s"
 
+file_logs = output_loc + "/%sfiles.log"
 log_file = output_loc + "/sim_runtimes.log"
 index_loc = output_loc + "/%d%s.simindex"
 query_dict = output_loc + "/query.dict"
@@ -36,16 +37,16 @@ def run_sim(ints, algorithm, query_files, corpus_dir):
         print "Output directory for %s must exist already. Run run_algorithm.py first." % algorithm
         return
     log = open(log_file % algorithm, 'a+')
-    max_dict = dictionary_loc % (algorithm, "base_")
     queries = load_queries(query_files, max_dict, algorithm)
     for size in ints:
         corpus_dict = dictionary_loc % (algorithm, size)
         corp = corpus_loc % (algorithm, size)
         sup_file = sup_file_loc % (algorithm, size, algorithm)
+        file_log = file_logs % (algorithm, size)
         if algorithm != "w2v":
             test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corp, sup_file=sup_file)
         else:
-            test_corpus = algorithms[algorithm](directory=corpus_dir, max_docs=size)
+            test_corpus = algorithms[algorithm](list_files=file_log, w2v_model=sup_file)
 
         start_time = datetime.datetime.now()
         for i, query in enumerate(queries):

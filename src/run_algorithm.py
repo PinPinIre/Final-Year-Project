@@ -43,8 +43,8 @@ def run_algo(directory, ints, algorithm):
     # For each int in the param list then apply the corpus algorithm using a sliced corpus
     for size in ints:
         new_directory = directory
-        corpus_file = corpus_loc % (algorithm, "%d_" % size)
-        corp_dict = dictionary_loc % (algorithm, "%d_" % size)
+        corpus_file = corpus_loc % (algorithm, size)
+        corp_dict = dictionary_loc % (algorithm, size)
         sup_loc = sup_file_loc % (algorithm, size, algorithm)
         file_log = file_logs % (algorithm, size)
         start_time = datetime.datetime.now()
