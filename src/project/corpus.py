@@ -97,6 +97,7 @@ class Corpus(object):
     def _build_sim_index(self, index_dir=None, num_features=None):
         pass
 
+    @staticmethod
     def _is_corpus_file(directory, doc):
         return isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"
 
@@ -112,11 +113,11 @@ class Corpus(object):
                 if name is "total":
                     continue
                 current_dir = join(directory, name)
-                temp = [join(current_dir, doc) for doc in listdir(current_dir) if _is_corpus_file(join(current_dir, doc), doc)]
+                temp = [join(current_dir, doc) for doc in listdir(current_dir) if Corpus._is_corpus_file(current_dir, doc)]
                 select_amount = int(ceil(len(temp) * max_dis))
                 docs.extend(sample(temp, select_amount))
         else:
-            docs = [join(directory, doc) for doc in listdir(current_dir) if _is_corpus_file(directory, doc)]
+            docs = [join(directory, doc) for doc in listdir(directory) if Corpus._is_corpus_file(directory, doc)]
         return docs
 
 
