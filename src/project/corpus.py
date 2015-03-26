@@ -110,7 +110,8 @@ class Corpus(object):
             current_dis = distributions[name] / distributions["total"]
             current_dir = join(directory, name)
             temp = [join(current_dir, doc) for doc in listdir(current_dir) if isfile(join(current_dir, doc)) and splitext(doc)[-1] == ".txt"]
-            docs.extend(sample(temp, int(ceil(len(temp) * current_dis * max_dis))))
+            select_amount = int(ceil(len(temp) * max_dis))
+            docs.extend(sample(temp, select_amount))
         return docs
 
 
