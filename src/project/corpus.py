@@ -16,7 +16,7 @@ class Corpus(object):
     """Wrapper class around Corpus streaming"""
 
     def __init__(self, directory=None, dictionary=None, distributions=None, corpus=None, max_docs=None):
-        if directory and distributions:
+        if directory:
             docs = self.get_docs(directory, distributions, max_docs)
             if not dictionary:
                 """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
@@ -97,21 +97,26 @@ class Corpus(object):
     def _build_sim_index(self, index_dir=None, num_features=None):
         pass
 
+    def _is_corpus_file(directory, doc):
+        return isfile(join(directory, doc)) and splitext(doc)[-1] == ".txt"
+
     @staticmethod
-    def get_docs(directory, distributions, max_docs):
-        if max_docs and max_docs <= distributions["total"]:
-            max_dis = max_docs / distributions["total"]
+    def get_docs(directory, distributions=None, max_docs=None):
+        if distributions:
+            if max_docs and distributions and max_docs <= distributions["total"]:
+                max_dis = max_docs / distributions["total"]
+            else:
+                max_dis = 1
+            docs = list()
+            for name in distributions:
+                if name is "total":
+                    continue
+                current_dir = join(directory, name)
+                temp = [join(current_dir, doc) for doc in listdir(current_dir) if _is_corpus_file(join(current_dir, doc), doc)]
+                select_amount = int(ceil(len(temp) * max_dis))
+                docs.extend(sample(temp, select_amount))
         else:
-            max_dis = 1
-        docs = list()
-        for name in distributions:
-            if name is "total":
-                continue
-            current_dis = distributions[name] / distributions["total"]
-            current_dir = join(directory, name)
-            temp = [join(current_dir, doc) for doc in listdir(current_dir) if isfile(join(current_dir, doc)) and splitext(doc)[-1] == ".txt"]
-            select_amount = int(ceil(len(temp) * max_dis))
-            docs.extend(sample(temp, select_amount))
+            docs = [join(directory, doc) for doc in listdir(current_dir) if _is_corpus_file(directory, doc)]
         return docs
 
 

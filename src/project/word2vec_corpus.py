@@ -8,8 +8,12 @@ from gensim import models
 # TODO: Investigate the similarity query
 class W2VCorpus(object):
 
-    def __init__(self, directory=None, w2v_model=None, max_docs=None, **kwargs):
-        docs = Corpus.get_docs(directory, distributions, max_docs)
+    def __init__(self, directory=None, w2v_model=None, list_files=None, max_docs=None, **kwargs):
+        if list_files:
+            with open(list_files) as f:
+                docs = [line.strip() for line in f]
+        else:
+            docs = Corpus.get_docs(directory, distributions, max_docs)
         self.docs = PaperCorpus(docs)
         start_time = datetime.datetime.now()
         if not w2v_model:
@@ -34,7 +38,7 @@ class W2VCorpus(object):
 
     @classmethod
     def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
-        return cls(dictionary=dictionary_file, corpus=corpus_file, w2v_model=sup_file)
+        return cls(w2v_model=sup_file)
 
     @staticmethod
     def _gen_docs(docs):
