@@ -31,15 +31,15 @@ def load_queries(query_dir, dictionary, algorithm):
     return query_corpus
 
 
-def run_sim(ints, algorithm, query_files, corpus_dir):
+def run_sim(ints, algorithm, query_files):
     output_dir = output_loc % algorithm
     if not exists(output_dir):
         print "Output directory for %s must exist already. Run run_algorithm.py first." % algorithm
         return
     log = open(log_file % algorithm, 'a+')
-    queries = load_queries(query_files, max_dict, algorithm)
     for size in ints:
         corpus_dict = dictionary_loc % (algorithm, size)
+        queries = load_queries(query_files, corpus_dict, algorithm)
         corp = corpus_loc % (algorithm, size)
         sup_file = sup_file_loc % (algorithm, size, algorithm)
         file_log = file_logs % (algorithm, size)
@@ -65,9 +65,8 @@ def main():
     parser.add_argument('integers', metavar='N', type=int, nargs='+', help='size values for the corpus')
     parser.add_argument('directory', help='directory for the query files')
     parser.add_argument('algorithm', help='algorithm to apply to the corpus', choices=algorithms)
-    parser.add_argument('corp_directory', help='directory for the arxiv corpus files')
     args = parser.parse_args()
-    run_sim(args.integers, args.algorithm, args.directory, args.corp_directory)
+    run_sim(args.integers, args.algorithm, args.directory)
 
 
 if __name__ == "__main__":
