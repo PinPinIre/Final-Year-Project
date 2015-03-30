@@ -1,7 +1,8 @@
 #!/bin/sh
 
 DIR=$1
-export TXT="${DIR}/txt"
+OUTPUT_DIR=$2
+export TXT="${OUTPUT_DIR}/txt"
 
 # Function to convert from a pdf to a txt file
 function process_file {
