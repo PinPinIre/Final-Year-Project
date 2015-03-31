@@ -1,6 +1,8 @@
 import dateutil.parser
 import time
+import argparse
 import matplotlib.pyplot as plt
+from os.path import isdir, join
 from operator import add
 from datetime import datetime
 from gensim import corpora, models, similarities
@@ -23,10 +25,14 @@ def gen_graph(figure, x, y, subtitle, xlabel, ylabel, scale):
     ax.plot(x, y, linestyle='--', marker='o')
 
 
-def load_data(sizes, algorithm):
-    dictionaries = [corpora.Dictionary.load(cdict % size) for size in sizes]
-    corpi = [corpora.MmCorpus(ccorpus % size) for size in sizes]
-    corpus_models = [models.ldamodel.LdaModel.load(corpus_model % (size, algorithm)) for size in sizes]
+def load_data(directory, sizes, algorithm):
+    dict_file = join(directory, cdict)
+    corp_file = join(directory, ccorpus)
+    model_file = join(directory, corpus_model)
+
+    dictionaries = [corpora.Dictionary.load(dict_file % size) for size in sizes]
+    corpi = [corpora.MmCorpus(corp_file % size) for size in sizes]
+    corpus_models = [models.ldamodel.LdaModel.load(model_file % (size, algorithm)) for size in sizes]
     dict_sizes = [len(x) for x in dictionaries]
     return dict_sizes, corpus_models, corpi, dictionaries
 
@@ -47,14 +53,13 @@ def read_logfile(path):
     return total_times, train_times, build_times
 
 
-def main():
+def graph_results(directory, sizes, algorithm):
     corp_dict_size = plt.figure()
     corp_time = plt.figure()
     corp_build = plt.figure()
     total_time = plt.figure()
-    total_times, train_times, build_times = read_logfile("runtimes.log")
-    sizes = [1000, 5000, 10000, 15000, 20000, 25000, 30000]
-    dict_sizes, corpus_models, corpi, dictionaries = load_data(sizes, "lda")
+    total_times, train_times, build_times = read_logfile(join(directory, "runtimes.log"))
+    dict_sizes, corpus_models, corpi, dictionaries = load_data(directory, sizes, algorithm)
 
     gen_graph(corp_dict_size, sizes, dict_sizes, 'Corpus size and dictionary features', "corpus size", "dictionary size", 'log')
     gen_graph(corp_time, sizes, train_times, 'Corpus size and train time', "corpus size", "training time", 'log')
@@ -62,6 +67,18 @@ def main():
     gen_graph(total_time, sizes, total_times, 'Corpus size and total time', "corpus size", "total time", 'log')
 
     plt.show()
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Graph result from run_algorithm.py')
+    parser.add_argument('sizes', metavar='N', type=int, nargs='+', help='size values for the corpus')
+    parser.add_argument('directory', help='directory for the arxiv txt files')
+    parser.add_argument('algorithm', help='algorithm to apply to the corpus')
+    args = parser.parse_args()
+    if isdir(args.directory):
+        graph_results(args.directory, args.sizes, args.algorithm)
+    else:
+        print "Directory argument should be a valid directory"
 
 
 if __name__ == "__main__":
