@@ -2,6 +2,7 @@ import dateutil.parser
 import time
 import argparse
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 from os.path import isdir, join
 from operator import add
 from datetime import datetime
@@ -34,6 +35,11 @@ def plt_multiple(figure, d1, d2, subtitle, xlabel, ylabel, scale):
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_yscale(scale)
+    lda_patch = mpatches.Patch(color='red', label='LDA')
+    knn_patch = mpatches.Patch(color='blue', label='kNN')
+
+    plt.legend(handles=[lda_patch, knn_patch], bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
+
     ax.plot(x1, y1, 'r--', x2, y2, 'bs', linestyle='--', marker='o')
 
 
@@ -90,7 +96,7 @@ def graph_multiple(directory, sizes):
     dict_sizes1, corpi1, dictionaries1 = load_data(dir1, sizes, "lda")
     dict_sizes2, corpi2, dictionaries2 = load_data(dir2, sizes, "knn")
     # Slicing is a temporary hack until I read the sizes from the log file rather than the command line
-    plt_multiple(figure, (train_times1[:len(sizes)], sizes), (train_times2[:len(sizes)], sizes), 'Corpus size and total time', "corpus size", "total time", 'linear')
+    plt_multiple(figure, (sizes, train_times1[:len(sizes)]), (sizes, train_times2[:len(sizes)]), 'Corpus size and total time', "corpus size", "total time", 'linear')
     plt.show()
 
 
