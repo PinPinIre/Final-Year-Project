@@ -34,6 +34,16 @@ def load_queries(query_dir, corp_dict, algorithm):
     return return_vectors
 
 
+def parse_lda_results(result_vector, directory, size):
+    result = ""
+    file_list = join(directory, file_logs % size)
+    with open(file_list) as file:
+        files = file.readlines()
+    for index, sim in result_vector:
+        result = result + ("%f\t%s\n" % (sim, files[index].strip()))
+    return result
+
+
 def run_sim(ints, algorithm, query_files, directory):
     if not exists(directory):
         print "Output directory for %s must exist already. Run run_algorithm.py first." % algorithm
@@ -50,7 +60,8 @@ def run_sim(ints, algorithm, query_files, directory):
         start_time = datetime.datetime.now()
         for i, query in enumerate(queries):
             most_sim = test_corpus.run_query(query, index_loc % (size, algorithm), 10)
-            print most_sim
+            if algorithm == "lda":
+                print parse_lda_results(most_sim, directory, size)
             # TODO: Log the similarities to a file for inspection
         end_time = datetime.datetime.now()
 
