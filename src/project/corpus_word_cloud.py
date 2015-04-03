@@ -17,10 +17,10 @@ class CorpusWordCloud(object):
         topics = self.corpus.print_topics(num_words=num_words)
         return map(CorpusWordCloud.parse_topics, topics)
 
-    def draw_topics(self, no_topics=10, num_words=30):
+    def draw_topics(self, path, no_topics=10, num_words=30):
         topics = self.get_topics(num_words=num_words)
-        for id, topic in enumerate(topics):
-            CorpusWordCloud.draw_topic(topic, id)
+        for id_t, topic in enumerate(topics):
+            CorpusWordCloud.draw_topic(topic, id_t, path)
 
     @staticmethod
     def parse_topics(string):
@@ -33,29 +33,27 @@ class CorpusWordCloud(object):
         return word_topics
 
     @staticmethod
-    def draw_topic(topic, id):
-        wordcloud = WordCloud(width=500, height=500, font_path="/System/Library/Fonts/Monaco.dfont", background_color="white")
+    def draw_topic(topic, t_id, outputdir):
+        wordcloud = WordCloud(width=500, height=500, font_path="/System/Library/Fonts/Monaco.dfont", background_color="black")
         elements = wordcloud.fit_words(topic.items())
-        wordcloud.to_file("/Users/cathalgeoghegan/Desktop/fypimages/" + str(id) + ".png")
+        wordcloud.to_file(outputdir + str(t_id) + ".png")
 
     @classmethod
     def load(cls, dictionary, corpus, lda_file):
-        return cls(LDACorpus.load(dictionary, corpus, lda_file))
+        return cls(LDACorpus.load(dictionary_file=dictionary, corpus_file=corpus, sup_file=lda_file))
 
 
 def main():
-    if len(sys.argv) > 2 and isdir(sys.argv[1]):
-        if not isfile("LDA.mm"):
-            if not isfile(sys.argv[2]) and not isfile(sys.argv[3]):
-                corpus = Corpus(sys.argv[1])
-                corpus.save(sys.argv[2], sys.argv[3])
-            corpus = LDACorpus(sys.argv[2], sys.argv[3], no_topics=25)
-            wc = CorpusWordCloud(corpus)
-            wc.save(sys.argv[2], sys.argv[3], "LDA.mm")
-        else:
-            wc = CorpusWordCloud.load(sys.argv[2], sys.argv[3], "LDA.mm")
-        wc.draw_topics()
+    if len(sys.argv) is 5:
+        dictionary = sys.argv[1]
+        corpus = sys.argv[2]
+        sup = sys.argv[3]
+        out = sys.argv[4]
+        wc = CorpusWordCloud.load(dictionary, corpus, sup)
+        wc.draw_topics(out, num_words=40)
+        print "Success!"
     else:
-        print "Corpus requires directory as an argument."
+        print sys.argv
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
