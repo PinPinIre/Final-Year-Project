@@ -1,56 +1,55 @@
 import argparse
 import datetime
-from os import getcwd
-from os.path import exists
+from os import listdir
+from os.path import exists, join
 from project import corpus, knn_corpus, lda_corpus, word2vec_corpus
+from gensim.corpora import Dictionary
 
 algorithms = {"lda": lda_corpus.LDACorpus,
-              "knn": knn_corpus.KNNCorpus,
-              "w2v": word2vec_corpus.W2VCorpus}
+              "knn": knn_corpus.KNNCorpus}
 
-base_dir = getcwd()
-output_loc = base_dir + "/%s.corpus_out"
-dictionary_loc = output_loc + "/%scorpus.dict"
-corpus_loc = output_loc + "/%scorpus.mm"
-sup_file_loc = output_loc + "/%d.%s"
+dictionary_loc = "%scorpus.dict"
+corpus_loc = "%scorpus.mm"
+sup_file_loc = "%d.%s"
 
-file_logs = output_loc + "/%sfiles.log"
-log_file = output_loc + "/sim_runtimes.log"
-index_loc = output_loc + "/%d%s.simindex"
-query_dict = output_loc + "/query.dict"
-query_corp = output_loc + "query.mm"
+file_logs = "%sfiles.log"
+log_file = "sim_runtimes.log"
+index_loc = "%d%s.simindex"
+query_dict = "query.dict"
+query_corp = "query.mm"
 
 
-def load_queries(query_dir, dictionary, algorithm):
-    if algorithm != "w2v":
-        query_corpus = corpus.Corpus(directory=query_dir, dictionary=dictionary)
-    else:
-        with open(list_files) as f:
-            docs = [line.strip() for line in f]
-        query_corpus = corpus.PaperCorpus(docs).get_texts()
-    return query_corpus
+def load_queries(query_dir, corp_dict, algorithm):
+    '''
+    Loads in all of the files in the query directory, converts them to bow and
+    returns an array of document vectors.
+    '''
+    return_vectors = list()
+    corp_dict = Dictionary.load(corp_dict)
+    valid_files = [join(query_dir, file) for file in listdir(query_dir) if corpus.Corpus._is_corpus_file(query_dir, file)]
+    query_corpus = corpus.PaperCorpus(valid_files)
+    return_vectors = list()
+    for doc in query_corpus.get_texts():
+        return_vectors.append(corp_dict.doc2bow(doc))
+    return return_vectors
 
 
-def run_sim(ints, algorithm, query_files):
-    output_dir = output_loc % algorithm
-    if not exists(output_dir):
+def run_sim(ints, algorithm, query_files, directory):
+    if not exists(directory):
         print "Output directory for %s must exist already. Run run_algorithm.py first." % algorithm
         return
-    log = open(log_file % algorithm, 'a+')
+    log = open(join(directory, log_file), 'a+')
     for size in ints:
-        corpus_dict = dictionary_loc % (algorithm, size)
+        corpus_dict = join(directory, dictionary_loc % size)
         queries = load_queries(query_files, corpus_dict, algorithm)
-        corp = corpus_loc % (algorithm, size)
-        sup_file = sup_file_loc % (algorithm, size, algorithm)
-        file_log = file_logs % (algorithm, size)
-        if algorithm != "w2v":
-            test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corp, sup_file=sup_file)
-        else:
-            test_corpus = algorithms[algorithm](list_files=file_log, w2v_model=sup_file)
+        corp = join(directory, corpus_loc % size)
+        sup_file = join(directory, sup_file_loc % (size, algorithm))
+        file_log = join(directory, file_logs % size)
+        test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corp, sup_file=sup_file)
 
         start_time = datetime.datetime.now()
         for i, query in enumerate(queries):
-            most_sim = test_corpus.run_query(query, index_loc % (algorithm, size, algorithm), 10)
+            most_sim = test_corpus.run_query(query, index_loc % (size, algorithm), 10)
             print most_sim
             # TODO: Log the similarities to a file for inspection
         end_time = datetime.datetime.now()
@@ -63,10 +62,11 @@ def run_sim(ints, algorithm, query_files):
 def main():
     parser = argparse.ArgumentParser(description='Run queries on bow corpus generated from the arxiv corpus.')
     parser.add_argument('integers', metavar='N', type=int, nargs='+', help='size values for the corpus')
-    parser.add_argument('directory', help='directory for the query files')
+    parser.add_argument('query', help='directory for the query files')
+    parser.add_argument('directory', help='directory for pre processed model files')
     parser.add_argument('algorithm', help='algorithm to apply to the corpus', choices=algorithms)
     args = parser.parse_args()
-    run_sim(args.integers, args.algorithm, args.directory)
+    run_sim(args.integers, args.algorithm, args.query, args.directory)
 
 
 if __name__ == "__main__":
