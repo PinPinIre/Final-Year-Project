@@ -5,10 +5,10 @@ from corpus import Corpus
 from gensim.matutils import sparse2full
 from gensim import models
 from annoy import AnnoyIndex
-#TODO: Currently using Annoy as was straight forward to set up, investigate FLANN
+
 
 class KNNCorpus(Corpus):
-    no_trees = 10 # TODO: Tweak this Annoy param
+    no_trees = 10  # TODO: Tweak this Annoy param
 
     def __init__(self, dictionary=None, corpus=None, index_file=None, max_docs=None, **kwargs):
         Corpus.__init__(self, dictionary=dictionary, corpus=corpus)
@@ -59,4 +59,5 @@ def main():
     else:
         print "Corpus requires directory as an argument."
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()

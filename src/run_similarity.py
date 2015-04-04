@@ -35,22 +35,26 @@ def load_queries(query_dir, corp_dict, algorithm):
     return return_vectors
 
 
-def parse_lda_results(result_vector, directory, size):
+def parse_results(result_vector, directory, algorithm, size):
     result = list()
     file_list = join(directory, file_logs % size)
     with open(file_list) as file:
         files = file.readlines()
-    for index, sim in result_vector:
-        result.append((sim, files[index].strip()))
+    if algorithm == "lda":
+        for index, sim in result_vector:
+            result.append((sim, files[index].strip()))
+    else:
+        for index in result_vector:
+            result.append(files[index].strip())
     return result
 
 
-def format_json(output_dict, directory):
+def format_json(output_dict, algorithm, directory):
     return_dict = dict()
     for size, queries in output_dict.iteritems():
         return_dict[size] = dict()
         for query, similarities in queries.iteritems():
-            return_dict[size][query] = parse_lda_results(similarities, directory, size)
+            return_dict[size][query] = parse_results(similarities, directory, algorithm, size)
     return return_dict
 
 
@@ -76,9 +80,9 @@ def run_sim(ints, algorithm, query_files, directory):
         query_time = end_time - start_time
         log.write("%s %d query time:\t" % (algorithm, size) + str(query_time) + "\n")
         query_results[size] = similarities
-    if algorithm == "lda":
-        query_results = format_json(query_results, directory)
-        open(join(directory, results_log), 'a+').write(json.dumps(query_results))
+
+    query_results = format_json(query_results, algorithm, directory)
+    open(join(directory, results_log), 'a+').write(json.dumps(query_results))
     log.close()
 
 
