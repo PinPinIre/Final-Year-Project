@@ -96,7 +96,7 @@ def graph_multiple(directory, sizes):
     dict_sizes1, corpi1, dictionaries1 = load_data(dir1, sizes, "lda")
     dict_sizes2, corpi2, dictionaries2 = load_data(dir2, sizes, "knn")
     # Slicing is a temporary hack until I read the sizes from the log file rather than the command line
-    plt_multiple(figure, (sizes, train_times1[:len(sizes)]), (sizes, train_times2[:len(sizes)]), 'Corpus size and total time', "corpus size", "total time", 'linear')
+    plt_multiple(figure, (sizes, total_times1[:len(sizes)]), (sizes, total_times2[:len(sizes)]), 'Corpus size and total time', "corpus size", "total time", 'linear')
     plt.show()
 
 
