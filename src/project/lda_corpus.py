@@ -15,8 +15,6 @@ class LDACorpus(Corpus):
         self.update = update
         self.chunksize = chunksize
         self.passes = passes
-        self.dict_loc = dictionary
-        self.vec_loc = corpus
         start_time = datetime.datetime.now()
         if not lda_corpus:
             self.transform_corpus(models.TfidfModel)
@@ -69,4 +67,5 @@ def main():
     else:
         print "Corpus requires directory as an argument."
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
