@@ -14,12 +14,11 @@ for corpus_name, data in x.iteritems():
 
         for result in results.itervalues():
             new_graph.add_node(result["file"])
-            if "similarity" in results:
-                sim = results["similarity"]
+            if "similarity" in result:
+                sim = result["similarity"]
             else:
                 print "no sim"
                 sim = 1
-            print sim
             new_graph.add_edge(query, result["file"], weight=sim)
 
         doc_graphs.append(new_graph)
@@ -28,4 +27,4 @@ for graph in doc_graphs:
     for n in graph:
         graph.node[n]['name'] = n
         similarity_graph_json = json_graph.node_link_data(graph)
-        # Todo: Save json file
+        json.dump(similarity_graph_json, open('graphs/graph.json', 'w'))
