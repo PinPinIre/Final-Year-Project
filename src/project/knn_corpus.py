@@ -20,8 +20,7 @@ class KNNCorpus(Corpus):
         if not index_file:
             self.transform_corpus(models.TfidfModel)
             for i, vector in enumerate(self):
-                dense_vector = sparse2full(vector, features).tolist()
-                self.index.add_item(i, dense_vector)
+                self.index.add_item(i, list(sparse2full(vector, features).astype(float)))
             self.index.build(self.no_trees)
         else:
             self.index.load(index_file)
