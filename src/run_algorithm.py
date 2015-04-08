@@ -1,6 +1,7 @@
 import argparse
 import datetime
 from os import makedirs, getcwd
+from shutil import move
 from os.path import isdir, exists, join
 from project import corpus, knn_corpus, lda_corpus, word2vec_corpus
 
@@ -31,7 +32,7 @@ def get_file_distributions(directory):
     return distributions
 
 
-def run_algo(directory, ints, algorithm):
+def run_algo(directory, ints, algorithm, move_dir=None):
     # Build corpus from largest int and directory (Check valid directory)
     max_corpus = max(ints)
     output_dir = output_loc % algorithm
@@ -62,6 +63,12 @@ def run_algo(directory, ints, algorithm):
         # Log temporal time
         log.write("%s_train_time:\t%d\t%s\n" % (algorithm, size, test_corpus.get_train_time()))
         log.flush()
+        if move_dir:
+            # It was noticed that KNN could generate a large index file, this can move to an external drive without affecting times
+            move(corpus_file, move_dir)
+            move(corp_dict, move_dir)
+            move(sup_loc, move_dir)
+            move(file_log, move_dir)
     log.close()
 
 
@@ -70,9 +77,10 @@ def main():
     parser.add_argument('integers', metavar='N', type=int, nargs='+', help='size values for the corpus')
     parser.add_argument('directory', help='directory for the arxiv txt files')
     parser.add_argument('algorithm', help='algorithm to apply to the corpus', choices=algorithms)
+    parser.add_argument('--movedir', help='optional directory to move outputed files to', default=None)
     args = parser.parse_args()
     if isdir(args.directory):
-        run_algo(args.directory, args.integers, args.algorithm)
+        run_algo(args.directory, args.integers, args.algorithm, args.movedir)
     else:
         print "Directory argument should be a valid directory"
 
