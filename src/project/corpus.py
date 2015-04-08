@@ -20,7 +20,7 @@ class Corpus(object):
             docs = self.get_docs(directory, distributions, max_docs)
             if not dictionary:
                 """ Construct dictionary without having all texts in memory, based off the example in the Gensim docs"""
-                dictionary = Dictionary(filter_common((codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs), prune_at=None)
+                dictionary = Dictionary(filter_common(codecs.open(doc, encoding='utf-8').read().lower().split()) for doc in docs)
                 once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
                 dictionary.filter_tokens(once_words)     # Exclude if appears once
                 dictionary.compactify()                  # Remove gaps in ids left by removing words
