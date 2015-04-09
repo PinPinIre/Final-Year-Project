@@ -24,7 +24,7 @@ class Corpus(object):
                 once_words = [id for id, freq in dictionary.dfs.iteritems() if freq is 1]
                 dictionary.filter_tokens(once_words)     # Exclude if appears once
                 dictionary.compactify()                  # Remove gaps in ids left by removing words
-                dictionary.filter_extremes(no_below=20, keep_n=None)  # Filter if in less than 10 docs
+                dictionary.filter_extremes(no_below=20, no_above=0.75, keep_n=None)  # Filter if in less than 20 docs and if in more than 75%
                 self.dictionary = dictionary
             else:
                 self.dictionary = Dictionary.load(dictionary)
