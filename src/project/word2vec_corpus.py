@@ -51,7 +51,9 @@ class W2VCorpus(object):
         return self.train_time
 
     def run_query(self, query, index_location, best_matches):
-        return self.similarity(query)
+        # Small hack to return most simlar docs. Not guaranteed to get best_matches
+        sim_matches = self.similarity(query)
+        return list(filter(lambda x: 'DOC_' in x[0], sim_matches))[:best_matches]
 
 
 def main():
