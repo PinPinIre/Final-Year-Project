@@ -7,7 +7,8 @@ from project import corpus, knn_corpus, lda_corpus, word2vec_corpus
 from gensim.corpora import Dictionary
 
 algorithms = {"lda": lda_corpus.LDACorpus,
-              "knn": knn_corpus.KNNCorpus}
+              "knn": knn_corpus.KNNCorpus,
+              "w2v": word2vec_corpus.W2VCorpus}
 
 dictionary_loc = "%scorpus.dict"
 corpus_loc = "%scorpus.mm"
@@ -27,10 +28,13 @@ def load_queries(query_files, corp_dict, algorithm):
     returns an array of document vectors.
     '''
     return_vectors = list()
-    corp_dict = Dictionary.load(corp_dict)
     query_corpus = corpus.PaperCorpus(query_files)
-    for doc in query_corpus.get_texts():
-        return_vectors.append(corp_dict.doc2bow(doc))
+    if algorithm != "w2v":
+        corp_dict = Dictionary.load(corp_dict)
+        for doc in query_corpus.get_texts():
+            return_vectors.append(corp_dict.doc2bow(doc))
+    else:
+        return_vectors = query_corpus
     return return_vectors
 
 
@@ -44,6 +48,13 @@ def parse_results(result_vector, directory, algorithm, size):
         for index, sim in result_vector:
             current_sim = dict()
             current_sim["similarity"] = sim
+            current_sim["file"] = basename(files[index].strip())
+            result[index] = current_sim
+    elif algorithm == "w2v":
+        for index, sim in result_vector:
+            current_sim = dict()
+            current_sim["similarity"] = sim
+            index = int(index[4:])
             current_sim["file"] = basename(files[index].strip())
             result[index] = current_sim
     else:
@@ -80,11 +91,18 @@ def run_sim(ints, algorithm, query_files, directory):
         corp = join(directory, corpus_loc % size)
         sup_file = join(directory, sup_file_loc % (size, algorithm))
         file_log = join(directory, file_logs % size)
+        if algorithm == "w2v":
+            corpus_dict = file_log
         test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corp, sup_file=sup_file)
         similarities = dict()
         start_time = datetime.datetime.now()
-        for i, query in enumerate(queries):
-            similarities[basename(query_files[i])] = test_corpus.run_query(query, index_loc % (size, algorithm), 10)
+        if algorithm != "w2v":
+            for i, query in enumerate(queries):
+                similarities[basename(query_files[i])] = test_corpus.run_query(query, index_loc % (size, algorithm), 10)
+        else:
+            query_sims = test_corpus.run_queries(queries, 10)
+            for i, query in enumerate(query_sims):
+                similarities[basename(query_files[i])] = query
         end_time = datetime.datetime.now()
 
         query_time = end_time - start_time
