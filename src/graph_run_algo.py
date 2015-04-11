@@ -80,7 +80,7 @@ def graph_results(directory, sizes, algorithm):
     total_times, train_times, build_times = read_logfile(join(directory, "runtimes.log"))
     dict_sizes, corpi, dictionaries = load_data(directory, sizes, algorithm)
 
-    gen_graph(corp_dict_size, sizes, dict_sizes, 'Corpus size and dictionary features', "corpus size", "dictionary size", 'log')
+    gen_graph(corp_dict_size, sizes, dict_sizes, 'Corpus size and dictionary features', "corpus size", "dictionary size", 'linear')
     gen_graph(corp_time, sizes, train_times, 'Corpus size and train time', "corpus size", "training time", 'log')
     gen_graph(corp_build, sizes, build_times, 'Corpus size and build time', "corpus size", "build time", 'log')
     gen_graph(total_time, sizes, total_times, 'Corpus size and total time', "corpus size", "total time", 'log')
