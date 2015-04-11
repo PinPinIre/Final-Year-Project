@@ -49,15 +49,18 @@ def run_algo(directory, ints, algorithm, move_dir=None):
         sup_loc = sup_file_loc % (algorithm, size, algorithm)
         file_log = file_logs % (algorithm, size)
         start_time = datetime.datetime.now()
+
         if algorithm != "w2v":
             # Build corpus of size max_corpus and save to be reused
             current_corpus = corpus.Corpus(directory=directory, max_docs=size, distributions=distributions)
             current_corpus.save(dictionary_file=corp_dict, corpus_file=corpus_file, sup_file=file_log)
             new_directory = None
         end_time = datetime.datetime.now()
+
         current_corpus_build_time = end_time - start_time
         log.write("%s_corpus_build_time:\t%d\t%s\n" % (algorithm, size, current_corpus_build_time))
         log.flush()
+
         test_corpus = algorithms[algorithm](directory=new_directory, dictionary=corp_dict, corpus=corpus_file, max_docs=size, distributions=distributions)
         test_corpus.save(sup_file=sup_loc)
         # Log temporal time
