@@ -103,6 +103,7 @@ class Corpus(object):
 
     @staticmethod
     def get_docs(directory, distributions=None, max_docs=None):
+        """Function to sample docs from directories or all files in a dir"""
         if distributions:
             if max_docs and distributions and max_docs <= distributions["total"]:
                 max_dis = max_docs / distributions["total"]
@@ -129,6 +130,7 @@ class PaperCorpus(TextCorpus):
             yield filter_common(handle.read().lower().split())
 
     def save(self, sup_file):
+        """Function to save the list of file names in corpus"""
         file_log = open(sup_file, 'a+')
         for doc in self.input:
             file_log.write("%s\n" % doc)

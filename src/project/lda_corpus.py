@@ -40,11 +40,15 @@ class LDACorpus(Corpus):
     def load(cls, dictionary_file=None, corpus_file=None, sup_file=None):
         return cls(dictionary=dictionary_file, corpus=corpus_file, lda_corpus=sup_file)
 
-    def _build_sim_index(self, index_dir="corpusindex", num_features=None, best_matches=10):
+    def _build_sim_index(self, index_dir="corpusindex", num_features=None, best_matches=5):
         if not num_features:
             num_features = self.no_topics
         self.sim_index = Similarity(index_dir, self.model[self], num_features=num_features)
         self.sim_index.num_best = best_matches
+
+    def prepareSim(self, directory, best_matches):
+        if not isfile(directory):
+            self._build_sim_index(index_dir=directory, best_matches=best_matches)
 
     def run_query(self, query, index_location, best_matches):
         if not self.sim_index:

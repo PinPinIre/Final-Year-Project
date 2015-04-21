@@ -6,6 +6,7 @@ from lda_corpus import LDACorpus
 
 
 class CorpusWordCloud(object):
+    """Class to generate a word cloud of lda topics"""
 
     def __init__(self, lda_corpus):
         self.corpus = lda_corpus
