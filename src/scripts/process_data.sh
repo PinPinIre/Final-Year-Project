@@ -1,5 +1,4 @@
 #!/bin/sh
-# TODO: Remove duplication in functions
 
 # Function to extract textual content from a LaTeX source
 function processFile {
@@ -30,7 +29,6 @@ function processFilePDF {
     fi
     iconv -f ${ENCODING} -t UTF-8 $1 > $TEX
     latex -interaction=nonstopmode $TEX
-    # TODO: Add Catdvi to extract plain text
 }
 
 export -f processFile   # Make function executable by parallel
@@ -55,4 +53,3 @@ find ${DIR} -type f ! -name "*.*" | parallel processFile ::: $FILES
 mv "${DIR}"*.txt "${TXT}"
 mv "${DIR}"*.tex "${LATEX}"
 #mv "${DIR}"*.pdf "${PDF}"
-

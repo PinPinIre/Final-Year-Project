@@ -6,7 +6,6 @@ from corpus import Corpus, PaperCorpus
 from gensim import models
 
 
-# TODO: Investigate the similarity query
 class W2VCorpus(object):
 
     def __init__(self, directory=None, w2v_model=None, list_files=None, max_docs=None, distributions=None, **kwargs):
@@ -20,7 +19,6 @@ class W2VCorpus(object):
         if not w2v_model:
 
             self.docs = PaperCorpus(docs)
-            # Todo: Tweak the default parameter
             self.model = models.Doc2Vec(self._gen_docs(self.docs), min_count=20, workers=4)
         else:
             self.model = models.Doc2Vec.load(w2v_model)

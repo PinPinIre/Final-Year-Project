@@ -3,6 +3,7 @@ import json
 import re
 from os.path import join
 
+
 file_regex = re.compile("(^[a-z\-]*)")
 
 
@@ -10,6 +11,7 @@ results_log = "query_results.json"
 
 
 def extract_arXiv_topic(filename):
+    """Function to extract arXiv topic from filename"""
     return_topic = ""
     matches = file_regex.match(filename).groups()
     if len(matches) > 0:
@@ -18,6 +20,7 @@ def extract_arXiv_topic(filename):
 
 
 def gen_match_results(query_file, directory):
+    """Function to parse JSON and log results to command line"""
     match_results = dict()
     with open(query_file) as f:
         json_data = f.read()
@@ -34,6 +37,43 @@ def gen_match_results(query_file, directory):
                 else:
                     match_results[corpus_name][query][topic] = 1
     json.dump(match_results, open(join(directory, "meta_results.json"), 'w'))
+    reduced = reduce_topics(match_results)
+    log_data(reduced)
+
+
+def reduce_topics(match_dict):
+    reduced_match = dict()
+    for corpus in match_dict:
+        reduced_match[corpus] = dict()
+        for key in match_dict[corpus]:
+            current_topic = extract_arXiv_topic(key)
+            if current_topic not in reduced_match[corpus]:
+                reduced_match[corpus][current_topic] = dict()
+            for topic in match_dict[corpus][key]:
+                if topic not in reduced_match[corpus][current_topic]:
+                    reduced_match[corpus][current_topic][topic] = 0
+                reduced_match[corpus][current_topic][topic] += match_dict[corpus][key][topic]
+    return reduced_match
+
+
+def log_data(reduced):
+    """Function to generate a table of the topic matches"""
+    topics = ["astro-ph", "cond-mat", "cs", "gr-qc", "hep-ex", "hep-lat", "hep-ph", "hep-th", "math", "math-ph", "nlin", "nucl-ex", "nucl-th", "physics", "quant-ph"]
+    for corpus in reduced:
+        print corpus
+        header = "Input Topic:"
+        for topic in topics:
+            header += "\t%s" % topic
+        print header
+        for key in reduced[corpus]:
+            line = "%s: & " % key
+            for topic in topics:
+                if topic in reduced[corpus][key]:
+                    count = reduced[corpus][key][topic]
+                else:
+                    count = 0
+                line += "& %s " % count
+            print line
 
 
 def main():

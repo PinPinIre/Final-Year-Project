@@ -6,8 +6,6 @@ import urllib
 BASE_URL = "http://arxiv.org"
 HEP_URL = 'http://arxiv.org/abs/hep-th/%d'
 
-# TODO: Change prints to logs
-
 
 def get_pdf(paper_id, save_dir):
     file_path = os.path.join(save_dir, str(paper_id) + ".pdf")
@@ -19,8 +17,7 @@ def get_pdf(paper_id, save_dir):
         except:
             print "Error"
         else:
-            # TODO: Check if this pattern holds for all papers
-            file = soup.find("a", {"accesskey" : "f"})
+            file = soup.find("a", {"accesskey": "f"})
             if file:
                 file_url = file["href"]
                 print os.path.join(save_dir, str(paper_id) + ".pdf")
@@ -35,4 +32,5 @@ def main():
     else:
         print "Usage <paper id> <destination directory>"
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()

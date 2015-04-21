@@ -160,8 +160,6 @@ def main():
     if len(sys.argv) > 2 and isdir(sys.argv[1]) and isfile(sys.argv[2]) and isfile(sys.argv[3]):
         load_corpus = Corpus()
         corpus = Corpus(directory=sys.argv[1])
-        # TODO: Write proper tests
-        # corpus.transform_corpus(models.TfidfModel)
         corpus.save(dictionary_file=sys.argv[2], corpus_file=sys.argv[3])
         load_corpus.load(dictionary_file=sys.argv[2], corpus_file=sys.argv[3])
     else:

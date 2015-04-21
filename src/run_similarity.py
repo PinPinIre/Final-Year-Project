@@ -94,13 +94,15 @@ def run_sim(ints, algorithm, query_files, directory):
         if algorithm == "w2v":
             corpus_dict = file_log
         test_corpus = algorithms[algorithm].load(dictionary_file=corpus_dict, corpus_file=corp, sup_file=sup_file)
+        if algorithm == "lda":
+            test_corpus.prepareSim(join(directory, "ldaindex%s" % size), 5)
         similarities = dict()
         start_time = datetime.datetime.now()
         if algorithm != "w2v":
             for i, query in enumerate(queries):
-                similarities[basename(query_files[i])] = test_corpus.run_query(query, index_loc % (size, algorithm), 10)
+                similarities[basename(query_files[i])] = test_corpus.run_query(query, index_loc % (size, algorithm), 5)
         else:
-            query_sims = test_corpus.run_queries(queries, 10)
+            query_sims = test_corpus.run_queries(queries, 5)
             for i, query in enumerate(query_sims):
                 similarities[basename(query_files[i])] = query
         end_time = datetime.datetime.now()
