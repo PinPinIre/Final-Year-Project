@@ -10,3 +10,6 @@ The algorithms being investigated are:
 * KNN (K-Nearest Neighbours)
 * Word2Vec
 
+To preprocess the the pdf files run the "src/scripts/process_pdfs.sh" script on the the corpus to convert to plain text. The "src/scripts/sort_corpus.sh" script can then be used to sort the files into directories based on their arXiv topics and genrate a log file of their distributions.
+
+Run the "src/run_algorithm.py" python script to generate the models. Run the src/run_similarity.py python script to query the models.
